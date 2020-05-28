@@ -404,9 +404,9 @@ m4+definitions(['
             (['M4_EXT_E'], 1),
             (['M4_EXT_I'], 1),
             (['M4_EXT_M'], 1),
-            (['M4_EXT_A'], 1),
-            (['M4_EXT_F'], 1),
-            (['M4_EXT_D'], 1),
+            (['M4_EXT_A'], 0),
+            (['M4_EXT_F'], 0),
+            (['M4_EXT_D'], 0),
             (['M4_EXT_Q'], 0),
             (['M4_EXT_L'], 0),
             (['M4_EXT_C'], 0),
@@ -920,16 +920,16 @@ m4+definitions(['
       //   o m4_asm(<MNEMONIC>, ...) to assemble instructions to their binary representations
       
       // Return 1 if the given instruction is supported, [''] otherwise.
-      // m4_instr_supported(<args-of-m4_instr(...)>)
+      // m4_instr_supported(<args-of-m4_instr(.)
       m4_define(['m4_instr_supported'],
                 ['m4_ifelse(M4_EXT_$3, 1,
                             ['m4_ifelse(M4_WORD_CNT, ['$2'], 1, [''])'],
-                            [''])'])
-      
-      // Instantiated (in \SV_plus context) for each instruction.
-      // m4_instr(<instr-type-char(s)>, <type-specific-args>)
-      // This instantiates m4_instr<type>(type-specific-args>)
-      m4_define_hide(['m4_instr'],
+                            [''])'])	
+      	
+      // Instantiated (in \SV_plus context) for each instruction.	
+      // m4_instr(<instr-type-char(s)>, <type-specific-args>)	
+      // This instantiates m4_instr<type>(type-specific-args>)	
+      m4_define_hide(['m4_instr'],	
                      ['// check instr type
                        // TODO: (IMMEDIATELY) Re-enable 2 lines below.
                        m4_ifelse(M4_OP5_$4_TYPE, m4_ifdef(['m4_instr_type_of_$1'], ['m4_instr_type_of_$1'], ['$1']), [''],
@@ -953,7 +953,7 @@ m4+definitions(['
 
       // Opcode + funct3 + funct7 (R-type). $@ as for m4_instrX(..), $7: MNEMONIC, $8: number of bits of leading bits of funct7 to interpret. If 5, for example, use the term funct5.
       m4_define(['m4_instr_funct7'],
-                ['m4_instr_decode_expr($7, m4_op5_and_funct3($@)[' && $raw_funct7'][6:m4_eval(7-$8)][' == $8'b$5'], $7)m4_funct3_localparam(['$7'], ['$4'])[' localparam [6:0] $7_INSTR_FUNCT$8 = $8'b$5;']'])
+                ['m4_instr_decode_expr($7, m4_op5_and_funct3($@)[' && $raw_funct7'][6:m4_eval(7-$8)][' == $8'b$5'], $7)m4_funct3_localparam(['$7'], ['$4'])[' localparam [$8-1:0] $7_INSTR_FUNCT$8 = $8'b$5;']'])
       // For cases w/ extra shamt bit that cuts into funct7.
       m4_define(['m4_instr_funct6'],
                 ['m4_instr_decode_expr($7, m4_op5_and_funct3($@)[' && $raw_funct7[6:1] == 6'b$5'], $7)m4_funct3_localparam(['$7'], ['$4'])[' localparam [6:0] $7_INSTR_FUNCT6 = 6'b$5;']'])
@@ -1023,17 +1023,17 @@ m4+definitions(['
       //   o Assembler definition of m4_asm_<MNEMONIC>: m4_define(['m4_asm_<MNEMONIC>'], ['m4_asm_instr_str(...)'])
       m4_define(['m4_instrI'], ['m4_instr_funct3($@)m4_define(['m4_asm_$5'], ['m4_asm_instr_str(I, ['$5'], $']['@){12'b']m4_arg(3)[', m4_asm_reg(']m4_arg(2)['), $5_INSTR_FUNCT3, m4_asm_reg(']m4_arg(1)['), $5_INSTR_OPCODE}'])'])
       m4_define(['m4_instrIf'], ['m4_instr_funct7($@, ['$6'], m4_len($5))m4_define(['m4_asm_$6'], ['m4_asm_instr_str(I, ['$6'], $']['@){['$6_INSTR_FUNCT']m4_len($5)[', ']m4_eval(12-m4_len($5))'b']m4_arg(3)[', m4_asm_reg(']m4_arg(2)['), $6_INSTR_FUNCT3, m4_asm_reg(']m4_arg(1)['), $6_INSTR_OPCODE}'])'])
-      // TODO: Convert all R types to RR, adding funct7 values.
-      //       Delete m4_instrR below.
-      //       Rename all RR to R.
-      //       Uncomment 2 lines under "// check instr type", above.
+      // TODO: Convert all R types to RR, adding funct7 values.	
+      //       Delete m4_instrR below.	
+      //       Rename all RR to R.	
+      //       Uncomment 2 lines under "// check instr type", above.	
       m4_define(['m4_instrR'], ['m4_instr_funct7($@, ['$6'], m4_ifelse($2, ['A'], 5, 7))m4_define(['m4_asm_$6'], ['m4_asm_instr_str(R, ['$6'], $']['@){m4_ifelse($2, ['A'], ['$6_INSTR_FUNCT5, ']']m4_arg(2)['[''], ['$6_INSTR_FUNCT7']), m4_asm_reg(']m4_arg(3)['), m4_asm_reg(']m4_arg(2)['), ']m4_asm_funct3(['$6'], ['$4'])[', m4_asm_reg(']m4_arg(1)['), $6_INSTR_OPCODE}'])'])	
       m4_define(['m4_instrR2'], ['m4_instr_funct7($@, 7)m4_define(['m4_asm_$7'], ['m4_asm_instr_str(R, ['$7'], $']['@){m4_ifelse($2, ['A'], ['$7_INSTR_FUNCT5, ']']m4_arg(2)['[''], ['$7_INSTR_FUNCT7']), 5'b$6, m4_asm_reg(']m4_arg(2)['), ']m4_asm_funct3(['$7'], ['$4'])[', m4_asm_reg(']m4_arg(1)['), $7_INSTR_OPCODE}'])'])	
       m4_define(['m4_instrR4'], ['m4_instr_funct2($@)m4_define(['m4_asm_$6'], ['m4_asm_instr_str(R, ['$6'], $']['@){m4_asm_reg(']m4_arg(4)['), $6_INSTR_FUNCT2, m4_asm_reg(']m4_arg(3)['), m4_asm_reg(']m4_arg(2)['), ']m4_asm_funct3(['$6'], ['$4'])[', m4_asm_reg(']m4_arg(1)['), $6_INSTR_OPCODE}'])'])	
       m4_define(['m4_instrS'], ['m4_instr_funct3($@, ['no_dest'])m4_define(['m4_asm_$5'], ['m4_asm_instr_str(S, ['$5'], $']['@){m4_asm_imm_field(']m4_arg(3)[', 12, 11, 5), m4_asm_reg(']m4_arg(2)['), m4_asm_reg(']m4_arg(1)['), ']m4_asm_funct3(['$5'], ['$4'])[', m4_asm_imm_field(']m4_arg(3)[', 12, 4, 0), $5_INSTR_OPCODE}'])'])	
       m4_define(['m4_instrB'], ['m4_instr_funct3($@, ['no_dest'])m4_define(['m4_asm_$5'], ['m4_asm_instr_str(B, ['$5'], $']['@){m4_asm_imm_field(']m4_arg(3)[', 13, 12, 12), m4_asm_imm_field(']m4_arg(3)[', 13, 10, 5), m4_asm_reg(']m4_arg(2)['), m4_asm_reg(']m4_arg(1)['), ']m4_asm_funct3(['$5'], ['$4'])[', m4_asm_imm_field(']m4_arg(3)[', 13, 4, 1), m4_asm_imm_field(']m4_arg(3)[', 13, 11, 11), $5_INSTR_OPCODE}'])'])	
-      m4_define(['m4_instrJ'], ['m4_instr_no_func($@)'])// TODO: asm
-      m4_define(['m4_instrU'], ['m4_instr_no_func($@)'])// TODO: asm
+      m4_define(['m4_instrJ'], ['m4_instr_no_func($@)'])// TODO: asm	
+      m4_define(['m4_instrU'], ['m4_instr_no_func($@)'])// TODO: asm	
       m4_define(['m4_instr_'], ['m4_instr_no_func($@)'])
 
       // For each instruction type.
@@ -1096,7 +1096,7 @@ m4+definitions(['
             output logic rvfi_halt,       
             output logic rvfi_intr,  
             output logic [1: 0] rvfi_ixl,
-            output logic [1: 0] rvfi_mode,
+            output logic [1: 0] rvfi_mode,       
             output logic [4: 0] rvfi_rs1_addr,   
             output logic [4: 0] rvfi_rs2_addr,   
             output logic [31: 0] rvfi_rs1_rdata,  
@@ -1927,7 +1927,8 @@ m4+definitions(['
          $sra_rslt[M4_WORD_RANGE] = /src[1]$reg_value[M4_WORD_MAX] ? $srl_rslt | ((M4_WORD_HIGH'b0 - 1) << (M4_WORD_HIGH - /src[2]$reg_value[4:0]) ): $srl_rslt;
          $slti_rslt[M4_WORD_RANGE] =  (/src[1]$reg_value[M4_WORD_MAX] == $raw_i_imm[M4_WORD_MAX]) ? $sltiu_rslt : {M4_WORD_MAX'b0,/src[1]$reg_value[M4_WORD_MAX]};
          $sltiu_rslt[M4_WORD_RANGE] = (/src[1]$reg_value < $raw_i_imm) ? 1 : 0;
-         $srli_srai_rslt[M4_WORD_RANGE] = ($raw_i_imm[10] == 1) ? $srai_intermediate_rslt : $srli_intermediate_rslt;
+         $srai_rslt[M4_WORD_RANGE] = $srai_intermediate_rslt;
+         $srli_rslt[M4_WORD_RANGE] = $srli_intermediate_rslt;
          $add_sub_rslt[M4_WORD_RANGE] = ($raw_funct7[5] == 1) ?  /src[1]$reg_value - /src[2]$reg_value : /src[1]$reg_value + /src[2]$reg_value;
          $add_rslt[M4_WORD_RANGE] = $add_sub_rslt;
          $sub_rslt[M4_WORD_RANGE] = $add_sub_rslt;
@@ -3162,7 +3163,7 @@ m4+module_def
          *failed = | /top/_hier|fetch/instr>>M4_REG_WR_STAGE$failed;
 
 \TLV
-   /* verilator lint_off WIDTH */  // Let's be strict about bit widths.
+   /* verilator lint_on WIDTH */  // Let's be strict about bit widths.
    m4_ifelse_block(m4_eval(M4_CORE_CNT > 1), ['1'], ['
    // Multi-core
    /M4_CORE_HIER
