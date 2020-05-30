@@ -72,8 +72,8 @@ module
     wire signed [numInVals:0] c;
     assign c[numInVals] = 1;
     assign c[(numInVals - 1):0] = 0;
-    wire [(topBound - bottomBound - 1):0] reverseOut =
-        (c>>>in)>>(numInVals - topBound);
+    wire [(topBound - bottomBound - 1):0] reverseOut;
+    assign reverseOut[(topBound - bottomBound - 1):0] = ((c>>>in)>>(numInVals - topBound));
     reverse#(topBound - bottomBound) reverse(reverseOut, out);
 
 endmodule
@@ -99,8 +99,8 @@ module
     wire signed [numInVals:0] c;
     assign c[numInVals] = 1;
     assign c[(numInVals - 1):0] = 0;
-    wire [(bottomBound - topBound - 1):0] reverseOut =
-        (c>>>~in)>>(topBound + 1);
+    wire [(bottomBound - topBound - 1):0] reverseOut;
+    assign reverseOut[(bottomBound - topBound - 1):0] = ((c>>>~in)>>(topBound + 1));
     reverse#(bottomBound - topBound) reverse(reverseOut, out);
 
 endmodule
@@ -120,13 +120,13 @@ module
     genvar ix;
     generate
         for (ix = 0; ix <= inWidth; ix = ix + 1) begin :Bit
-            wire [(countWidth - 1):0] countSoFar;
+            wire [countWidth:0] countSoFar;
             if (ix == 0) begin
                 assign countSoFar = 0;
             end else begin
                 assign countSoFar =
                     Bit[ix - 1].countSoFar | (oneLeastReverseIn[ix] ? ix : 0);
-                if (ix == inWidth) assign count = countSoFar;
+                if (ix == inWidth) assign count = countSoFar[(countWidth - 1):0];
             end
         end
     endgenerate
