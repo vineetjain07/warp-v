@@ -275,7 +275,7 @@ module
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     wire CDom_sign = opSignC;
-    wire signed [(expWidth + 1):0] CDom_sExp = intermed_sExp - doSubMags;
+    wire signed [(expWidth + 1):0] CDom_sExp = intermed_sExp - {{(expWidth + 1){1'b0}} ,doSubMags};
     wire [(sigWidth*2 + 1):0] CDom_absSigSum =
         doSubMags ? ~sigSum[(sigSumWidth - 1):(sigWidth + 1)]
             : {1'b0, intermed_highAlignedSigC[(sigWidth + 1):sigWidth],
