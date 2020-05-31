@@ -135,7 +135,7 @@ module
     wire propagateNaNPayload = 0;
 `endif
     wire signed [(adjustedExpWidth - 1):0] sAdjustedExp =
-        in_sExp + ((1<<outExpWidth) - (1<<inExpWidth));
+        in_sExp + ((1 << outExpWidth) - (1 << inExpWidth));
     wire [(outSigWidth + 2):0] adjustedSig;
     generate
         if (inSigWidth <= outSigWidth + 2) begin
@@ -211,7 +211,8 @@ module
             wire [(outSigWidth + 2):0] roundedSig_temp1 = roundIncr ? (((adjustedSig | roundMask) >> 2) + 1) & ~(roundingMode_near_even && roundPosBit && !anyRoundExtra
                                     ? roundMask >> 1 : 0) : (adjustedSig & ~roundMask) >> 2 | (roundingMode_odd && anyRound ? roundPosMask>>1 : 0);
             wire [(outSigWidth + 1):0] roundedSig = roundedSig_temp1[(outSigWidth + 1):0];
-            wire signed [adjustedExpWidth:0] sExtAdjustedExp = sAdjustedExp[(adjustedExpWidth - 1):0];
+            
+            wire signed [adjustedExpWidth:0] sExtAdjustedExp = sAdjustedExp;
 
             wire signed [(outSigWidth + 1):0] sRoundedExp_temp1 = { {(outSigWidth - adjustedExpWidth + 1){1'b0}} ,sExtAdjustedExp} + (roundedSig >> outSigWidth);
             wire signed [adjustedExpWidth:0] sRoundedExp = sRoundedExp_temp1[adjustedExpWidth:0];

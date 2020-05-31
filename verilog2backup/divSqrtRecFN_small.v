@@ -212,7 +212,7 @@ module
     *------------------------------------------------------------------------*/
     wire [1:0] decHiSigA_S = sigA_S[(sigWidth - 1):(sigWidth - 2)] - 1;
     wire [(sigWidth + 2):0] rem =
-          (inReady && !oddSqrt_S ? sigA_S<<1 : 0)
+          (inReady && !oddSqrt_S ? sigA_S << 1 : 0)
         | (inReady &&  oddSqrt_S
                ? {decHiSigA_S, sigA_S[(sigWidth - 3):0], 3'b0} : 0)
         | (!inReady ? rem_Z<<1 : 0);
@@ -302,7 +302,7 @@ module
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    //wire sqrtOpOut;   Comment
+    wire sqrtOpOut;
     wire [2:0] roundingModeOut;
     wire invalidExc, infiniteExc, out_isNaN, out_isInf, out_isZero, out_sign;
     wire signed [(expWidth + 1):0] out_sExp;
