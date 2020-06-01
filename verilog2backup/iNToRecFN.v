@@ -66,7 +66,7 @@ module
         countLeadingZeros(extAbsIn, adjustedNormDist);
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
- assign sig = ( {(exIntWidth - expWidth + 1){1'b0}} ,{extAbsIn} << adjustedNormDist) >> (extIntWidth - intWidth);
+    assign sig = ({ {(expWidth - 1 - extIntWidth){1'b0}} ,extAbsIn} << adjustedNormDist) >> (extIntWidth - intWidth);
     assign isZero = !sig[intWidth - 1];
     assign sExp = {1'b0 ,2'b10, ~adjustedNormDist};
 
