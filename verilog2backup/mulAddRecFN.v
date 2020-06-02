@@ -282,9 +282,9 @@ module
     wire CDom_absSigSumExtra =
         doSubMags ? !(&sigSum[sigWidth:1]) : |sigSum[(sigWidth + 1):1];
 
-    wire [(sigWidth*3 + 1):0] CDom_mainSig_temp1 = (CDom_absSigSum << intermed_CDom_CAlignDist) >> (sigWidth - 3);
+    wire [(sigWidth*3 + 1):0] CDom_mainSig_temp1 = ( {{(sigWidth){1'b0}},CDom_absSigSum} << intermed_CDom_CAlignDist) >> (sigWidth - 3);
     wire [(sigWidth + 4):0] CDom_mainSig = CDom_mainSig_temp1[(sigWidth + 4):0];
-    
+
     wire [((sigWidth | 3) - 1):0] CDom_grainAlignedLowSig = { { ((sigWidth | 3) - (sigWidth)){1'b0}} , CDom_absSigSum[(sigWidth - 1):0] } << (~sigWidth & 3);
     wire [sigWidth/4:0] CDom_reduced4LowSig;
     compressBy4#(sigWidth | 3)
@@ -319,7 +319,7 @@ module
     wire signed [(expWidth + 1):0] notCDom_sExp =
         intermed_sExp - {{ ( (expWidth + 2) - (clog2(prodWidth + 4)) ){1'b0} } , notCDom_nearNormDist};
 
-    wire [(prodWidth*2 + 7):0] notCDom_mainSig_temp1 =  ({1'b0, notCDom_absSigSum} << notCDom_nearNormDist) >> (sigWidth - 1);
+    wire [(prodWidth*2 + 6):0] notCDom_mainSig_temp1 =  ({ {(prodWidth + 4){1'b0}} ,1'b0, notCDom_absSigSum} << notCDom_nearNormDist) >> (sigWidth - 1);
     wire [(sigWidth + 4):0] notCDom_mainSig =  notCDom_mainSig_temp1[(sigWidth + 4):0];
 
     wire [(((sigWidth/2 + 1) | 1) - 1):0] CDom_grainAlignedLowReduced2Sig = notCDom_reduced2AbsSigSum[sigWidth/2:0] << ((sigWidth/2) & 1);
