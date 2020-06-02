@@ -183,10 +183,10 @@ module
                     outMinNormExp
                 ) lowMask_roundMask(
                         sAdjustedExp[outExpWidth:0]
-                            | (propagateNaNPayload ? ( 2 ** outExpWidth) : {(outExpWidth){1'b0}}),
+                            | (propagateNaNPayload ? ( 2 ** outExpWidth) : {(outExpWidth + 1){1'b0}}),
                         roundMask_main
                     );
-                assign roundMask = {roundMask_main | {(outExpWidth + 1){doShiftSigDown1}}, 2'b11};
+                assign roundMask = {(roundMask_main | {(outSigWidth + 1){doShiftSigDown1} }) , 2'b11};
             end
             wire [(outSigWidth + 2):0] shiftedRoundMask = roundMask>>1;
             wire [(outSigWidth + 2):0] roundPosMask =
