@@ -183,10 +183,10 @@ module
                     outMinNormExp
                 ) lowMask_roundMask(
                         sAdjustedExp[outExpWidth:0]
-                            | (propagateNaNPayload ? (1'b1 << outExpWidth) : 1'b0),
+                            | (propagateNaNPayload ? ( 2 ** outExpWidth) : {(outExpWidth){1'b0}}),
                         roundMask_main
                     );
-                assign roundMask = {roundMask_main | doShiftSigDown1, 2'b11};
+                assign roundMask = {roundMask_main | {(outExpWidth + 1){doShiftSigDown1}}, 2'b11};
             end
             wire [(outSigWidth + 2):0] shiftedRoundMask = roundMask>>1;
             wire [(outSigWidth + 2):0] roundPosMask =
@@ -212,7 +212,7 @@ module
                                     ? roundMask >> 1 : 0) : (adjustedSig & ~roundMask) >> 2 | (roundingMode_odd && anyRound ? roundPosMask>>1 : 0);
             wire [(outSigWidth + 1):0] roundedSig = roundedSig_temp1[(outSigWidth + 1):0];
             
-            wire signed [adjustedExpWidth:0] sExtAdjustedExp = sAdjustedExp;
+            wire signed [adjustedExpWidth:0] sExtAdjustedExp = { sAdjustedExp[adjustedExpWidth] , sAdjustedExp[adjustedExpWidth - 1 : 0] };
 
             wire signed [(outSigWidth + 1):0] sRoundedExp_temp1 = { {(outSigWidth - adjustedExpWidth + 1){1'b0}} ,sExtAdjustedExp} + (roundedSig >> outSigWidth);
             wire signed [adjustedExpWidth:0] sRoundedExp = sRoundedExp_temp1[adjustedExpWidth:0];
