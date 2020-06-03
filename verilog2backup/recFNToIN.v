@@ -87,7 +87,7 @@ module
     wire [(intWidth + sigWidth - 1):0] shiftedSig =
         { {(intWidth){1'b0}} ,magGeOne, sig[(sigWidth - 2):0]}
             << (magGeOne ? sExp[(boundedIntExpWidth - 1):0] : 0);
-    wire [(intWidth + sigWidth - 1):0] alignedSig_temp1 = {shiftedSig >> (sigWidth - 2), |shiftedSig[(sigWidth - 3):0]};
+    wire [(intWidth + sigWidth):0] alignedSig_temp1 = {shiftedSig >> (sigWidth - 2), |shiftedSig[(sigWidth - 3):0]};
     wire [(intWidth + 1):0] alignedSig = alignedSig_temp1[(intWidth + 1):0];
     wire [(intWidth + 1):0] unroundedInt_temp1 = alignedSig >> 2;
     wire [(intWidth - 1):0] unroundedInt = unroundedInt_temp1[(intWidth - 1):0];
