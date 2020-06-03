@@ -212,22 +212,25 @@ module
     *------------------------------------------------------------------------*/
     wire [1:0] decHiSigA_S = sigA_S[(sigWidth - 1):(sigWidth - 2)] - 1;
     wire [(sigWidth + 2):0] rem =
-          (inReady && !oddSqrt_S ? sigA_S << 1 : 0)
+          (inReady && !oddSqrt_S ? {2'b00 , sigA_S} << 1 : 0)
         | (inReady &&  oddSqrt_S
                ? {decHiSigA_S, sigA_S[(sigWidth - 3):0], 3'b0} : 0)
-        | (!inReady ? rem_Z<<1 : 0);
-    wire [sigWidth:0] bitMask = ({{(sigWidth + 2){1'b0}}, 1'b1}<<cycleNum)>>2;
+        | (!inReady ? {1'b0 ,rem_Z} << 1 : 0);
+
+    wire [sigWidth + 2 :0] bitMask_temp1 = ({{(sigWidth + 2){1'b0}}, 1'b1} << cycleNum) >> 2;
+    wire [sigWidth:0] bitMask = bitMask_temp1[sigWidth:0];
+
     wire [(sigWidth + 1):0] trialTerm =
-          ( inReady && !sqrtOp    ? sigB_S<<1           : 0)
-        | ( inReady && evenSqrt_S ? 1<<sigWidth         : 0)
-        | ( inReady && oddSqrt_S  ? 5<<(sigWidth - 1)   : 0)
-        | (!inReady && !sqrtOp_Z  ? {1'b1, fractB_Z}<<1 : 0)
-        | (!inReady &&  sqrtOp_Z  ? sigX_Z<<1 | bitMask : 0);
-    wire signed [(sigWidth + 3):0] trialRem = rem - trialTerm;
+          ( inReady && !sqrtOp    ? {1'b0,sigB_S} << 1      : 0)
+        | ( inReady && evenSqrt_S ? 1 << sigWidth           : 0)
+        | ( inReady && oddSqrt_S  ? 5 << (sigWidth - 1)     : 0)
+        | (!inReady && !sqrtOp_Z  ? {3'b001, fractB_Z} << 1 : 0)
+        | (!inReady &&  sqrtOp_Z  ? sigX_Z << 1 | {1'b0,bitMask}  : 0);
+    wire signed [(sigWidth + 3):0] trialRem = {1'b0, rem} - {2'b00, trialTerm};
     wire newBit = (0 <= trialRem);
     always @(posedge clock) begin
         if (entering_normalCase || (cycleNum > 2)) begin
-            rem_Z <= newBit ? trialRem : rem;
+            rem_Z <= newBit ? trialRem[(sigWidth + 1):0] : rem[(sigWidth + 1):0];
         end
 `ifdef HardFloat_propagateNaNPayloads
         if (
@@ -237,20 +240,20 @@ module
             notZeroRem_Z <= (trialRem != 0);
             sigX_Z <=
                   (inReady &&  isNaN_S         ? {1'b1, fractNaN_S, 2'b00} : 0)
-                | (inReady && !isNaN_S && !sqrtOp ? newBit<<(sigWidth + 1) : 0)
-                | (inReady && !isNaN_S &&  sqrtOp ? 1<<sigWidth            : 0)
+                | (inReady && !isNaN_S && !sqrtOp ? newBit << (sigWidth + 1) : 0)
+                | (inReady && !isNaN_S &&  sqrtOp ? 1 << sigWidth            : 0)
                 | (inReady && !isNaN_S && oddSqrt_S
-                                                 ? newBit<<(sigWidth - 1) : 0)
+                                                 ? newBit << (sigWidth - 1) : 0)
                 | (!inReady                      ? sigX_Z | bitMask       : 0);
         end
 `else
         if (entering_normalCase || (!inReady && newBit)) begin
             notZeroRem_Z <= (trialRem != 0);
             sigX_Z <=
-                  ( inReady && !sqrtOp   ? newBit<<(sigWidth + 1) : 0)
-                | ( inReady &&  sqrtOp   ? 1<<sigWidth            : 0)
-                | ( inReady && oddSqrt_S ? newBit<<(sigWidth - 1) : 0)
-                | (!inReady              ? sigX_Z | bitMask       : 0);
+                  ( inReady && !sqrtOp   ? { {(sigWidth + 1){1'b0}} ,newBit} << (sigWidth + 1) : 0)
+                | ( inReady &&  sqrtOp   ? 1 << sigWidth            : 0)
+                | ( inReady && oddSqrt_S ? {{(sigWidth - 1){1'b0}},newBit} << (sigWidth - 1) : 0)
+                | (!inReady              ? sigX_Z | {1'b0, bitMask}       : 0);
         end
 `endif
     end
@@ -302,6 +305,7 @@ module
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
+    //wire sqrtOpOut;
     wire [2:0] roundingModeOut;
     wire invalidExc, infiniteExc, out_isNaN, out_isInf, out_isZero, out_sign;
     wire signed [(expWidth + 1):0] out_sExp;
