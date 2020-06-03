@@ -252,7 +252,7 @@ module
             sigX_Z <=
                   ( inReady && !sqrtOp   ? { {(sigWidth + 1){1'b0}} ,newBit} << (sigWidth + 1) : 0)
                 | ( inReady &&  sqrtOp   ? 1 << sigWidth            : 0)
-                | ( inReady && oddSqrt_S ? {{(sigWidth - 1){1'b0}},newBit} << (sigWidth - 1) : 0)
+                | ( inReady && oddSqrt_S ? { {(sigWidth + 1){1'b0}}, newBit} << (sigWidth - 1) : 0)
                 | (!inReady              ? sigX_Z | {1'b0, bitMask}       : 0);
         end
 `endif
