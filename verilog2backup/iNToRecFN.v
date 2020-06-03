@@ -67,8 +67,8 @@ module
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     //assign sig = ({ {( (2 ** (expWidth - 1)) - 1 ){1'b0}} ,extAbsIn} << adjustedNormDist) >> (extIntWidth - intWidth);
-    wire [(2 ** (expWidth - 1)) : 0] sig_temp1;
-    assign sig_temp1[(2 ** (expWidth - 1)) : 0] = ({ {( (2 ** (expWidth - 1)) - 1 ){1'b0}} ,extAbsIn} << adjustedNormDist) >> (extIntWidth - intWidth);
+    wire [((2 ** (expWidth - 1)) + extIntWidth - 3) : 0] sig_temp1;
+    assign sig_temp1[((2 ** (expWidth - 1)) + extIntWidth - 3) : 0] = ({ {( (2 ** (expWidth - 1)) - 1 ){1'b0}} ,extAbsIn} << adjustedNormDist) >> (extIntWidth - intWidth);
     assign sig = sig_temp1[intWidth:0];
 
     assign isZero = !sig[intWidth - 1];
