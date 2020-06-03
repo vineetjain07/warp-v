@@ -213,6 +213,6 @@ m4_sv_include_url(['https://raw.githubusercontent.com/vineetjain07/warp-v/floati
                                ({5{$is_operation_compare}} & $exceptionFlags_compare) |
                                ({5{$is_operation_mul_add}} & $exceptionFlags_mul_add) |
                           ({5{$is_operation_int_to_recfn}} & $exceptionFlags_int_to_recfn) |
-                          ({5{$is_operation_recfn_to_int}} & $exceptionFlags_recfn_to_int);
+                          ({5{$is_operation_recfn_to_int}} & {2'b00, $exceptionFlags_recfn_to_int});
       {$_exception_invaild_output, $_exception_infinite_output, $_exception_overflow_output, $_exception_underflow_output, $_exception_inexact_output} = $exceptionFlags_all[4:0];
-      $_divide_by_zero = (/_top['']$operation == 4'h3 || /_top['']$operation == 4'h4) ? $exceptionFlags_div_sqrt[3] : 1'b0;
+      $_divide_by_zero = (/_top['']$operation == 5'h3 || /_top['']$operation == 5'h4) ? $exceptionFlags_div_sqrt[3] : 1'b0;
