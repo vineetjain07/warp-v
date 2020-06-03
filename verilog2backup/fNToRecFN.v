@@ -60,10 +60,10 @@ module
     wire [(normDistWidth - 1):0] normDist;
     countLeadingZeros#(sigWidth - 1, normDistWidth)
         countLeadingZeros(fractIn, normDist);
-    wire [(sigWidth - 2):0] subnormFract = (fractIn<<normDist)<<1;
+    wire [(sigWidth - 2):0] subnormFract = (fractIn << normDist) << 1;
     wire [expWidth:0] adjustedExp =
-        (isZeroExpIn ? normDist ^ ((1<<(expWidth + 1)) - 1) : expIn)
-            + ((1<<(expWidth - 1)) | (isZeroExpIn ? 2 : 1));
+        (isZeroExpIn ? { {(expWidth - normDistWidth + 1){1'b0}}, normDist} ^ ((1 << (expWidth + 1)) - 1) : {1'b0, expIn})
+            + ((1 << (expWidth - 1)) | (isZeroExpIn ? 2 : 1));
     wire isZero = isZeroExpIn && isZeroFractIn;
     wire isSpecial = (adjustedExp[expWidth:(expWidth - 1)] == 'b11);
     /*------------------------------------------------------------------------
@@ -72,7 +72,7 @@ module
     assign exp[expWidth:(expWidth - 2)] =
         isSpecial ? {2'b11, !isZeroFractIn}
             : isZero ? 3'b000 : adjustedExp[expWidth:(expWidth - 2)];
-    assign exp[(expWidth - 3):0] = adjustedExp;
+    assign exp[(expWidth - 3):0] = adjustedExp[(expWidth - 3):0];
     assign out = {sign, exp, isZeroExpIn ? subnormFract : fractIn};
 
 endmodule
