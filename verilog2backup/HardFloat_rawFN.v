@@ -212,7 +212,7 @@ module
                                     ? roundMask >> 1 : 0) : (adjustedSig & ~roundMask) >> 2 | (roundingMode_odd && anyRound ? roundPosMask>>1 : 0);
             wire [(outSigWidth + 1):0] roundedSig = roundedSig_temp1[(outSigWidth + 1):0];
             
-            wire signed [adjustedExpWidth:0] sExtAdjustedExp = { sAdjustedExp[adjustedExpWidth] , sAdjustedExp[adjustedExpWidth - 1 : 0] };
+            wire signed [adjustedExpWidth:0] sExtAdjustedExp = { sAdjustedExp[adjustedExpWidth - 1] , sAdjustedExp[adjustedExpWidth - 1 : 0] };
 
             wire signed [(outSigWidth + 1):0] sRoundedExp_temp1 = { {(outSigWidth - adjustedExpWidth + 1){1'b0}} ,sExtAdjustedExp} + (roundedSig >> outSigWidth);
             wire signed [adjustedExpWidth:0] sRoundedExp = sRoundedExp_temp1[adjustedExpWidth:0];
