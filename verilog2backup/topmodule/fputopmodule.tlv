@@ -163,17 +163,17 @@ m4_sv_include_url(['https://raw.githubusercontent.com/vineetjain07/warp-v/floati
          m4+mul_recfn(1, #_expwidth, #_sigwidth, $control, $fnToRec_a, $fnToRec_b, /_top['']$_roundingmode, $output_mul, $exceptionFlags_mul)
          
       $is_operation_div_sqrt = (/_top['']$_operation == 5'h9 || /_top['']$_operation == 5'ha);
-      ?$is_operation_div_sqrt
-         $div_sqrt_Op = (/_top['']$_operation == 5'h9) ? 1'b0 : 1'b1;
-         //<Currently it's just one time>
-         
-         $get_valid = /_top['']$_input_valid;
-         
-         $operand_div_sqrt_a[(#_expwidth + #_sigwidth):0] = ($get_valid) ? $fnToRec_a[(#_expwidth + #_sigwidth):0] : $RETAIN;
-         $operand_div_sqrt_b[(#_expwidth + #_sigwidth):0] = ($get_valid) ? $fnToRec_b[(#_expwidth + #_sigwidth):0] : $RETAIN;
-         
-         m4+div_sqrt_recfn_small(1, #_expwidth, #_sigwidth, /_top['']$_nreset, /_top['']$_clock, $control, $in_ready, /_top['']$_input_valid, $div_sqrt_Op, $operand_div_sqrt_a, $operand_div_sqrt_b, /_top['']$_roundingmode, $_outvalid, $sqrtresult, $output_div_sqrt, $exceptionFlags_div_sqrt)
-         $result_div_sqrt_temp[(#_expwidth + #_sigwidth):0] = ($_outvalid == 1) ? $output_div_sqrt : $RETAIN;
+      //?$is_operation_div_sqrt
+      $div_sqrt_Op = (/_top['']$_operation == 5'h9) ? 1'b0 : 1'b1;
+      //<Currently it's just one time>
+
+      $get_valid = /_top['']$_input_valid;
+
+      $operand_div_sqrt_a[(#_expwidth + #_sigwidth):0] = ($get_valid) ? $fnToRec_a[(#_expwidth + #_sigwidth):0] : $RETAIN;
+      $operand_div_sqrt_b[(#_expwidth + #_sigwidth):0] = ($get_valid) ? $fnToRec_b[(#_expwidth + #_sigwidth):0] : $RETAIN;
+
+      m4+div_sqrt_recfn_small(1, #_expwidth, #_sigwidth, /_top['']$_nreset, /_top['']$_clock, $control, $in_ready, /_top['']$_input_valid, $div_sqrt_Op, $operand_div_sqrt_a, $operand_div_sqrt_b, /_top['']$_roundingmode, $_outvalid, $sqrtresult, $output_div_sqrt, $exceptionFlags_div_sqrt)
+      $result_div_sqrt_temp[(#_expwidth + #_sigwidth):0] = ($_outvalid == 1) ? $output_div_sqrt : $RETAIN;
          
       $is_operation_compare = (/_top['']$_operation == 5'he || /_top['']$_operation == 5'hf || /_top['']$_operation == 5'h13 || /_top['']$_operation == 5'h14 || /_top['']$_operation == 5'h15);
       ?$is_operation_compare
