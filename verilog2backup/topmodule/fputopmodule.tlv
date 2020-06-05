@@ -204,7 +204,10 @@ m4_sv_include_url(['https://raw.githubusercontent.com/vineetjain07/warp-v/floati
          m4+recfn_to_int(1, #_expwidth, #_sigwidth, #_intwidth, $control, $signedout, $fnToRec_a, /_top['']$_roundingmode, $_int_output, $exceptionFlags_recfn_to_int)
          
       m4+rec_to_fn(1, #_expwidth, #_sigwidth, $final_output_module, $result_fn)
+      m4+rec_to_fn(1, #_expwidth, #_sigwidth, $result_div_sqrt_temp, $result_fn11)
       
+      $output11[(#_expwidth + #_sigwidth) - 1:0] = $result_fn11;
+
       $_output[(#_expwidth + #_sigwidth) - 1:0] = $result_fn;
       
       $exceptionFlags_all[4:0] =    ({5{$is_operation_add_sub}} & $exceptionFlags_add_sub) |
