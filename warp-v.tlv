@@ -1418,10 +1418,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(ADDI, r4, r0, 0100000010)
    m4_asm(ADDI, r5, r0, 1111110010)
    m4_asm(ADDI, r6, r0, 10001)
-   m4_asm(FSW, r0, r1, 000001000000)
-   m4_asm(FSW, r0, r2, 000001000100)
-   m4_asm(FLW, r16, r0, 000001000000)
-   m4_asm(FLW, r17, r0, 000001000100)
+   //m4_asm(FSW, r0, r1, 000001000000)
+   //m4_asm(FSW, r0, r2, 000001000100)
+   //m4_asm(FLW, r16, r0, 000001000000)
+   //m4_asm(FLW, r17, r0, 000001000100)
    m4_asm(FMADDS, r5, r1, r2, r3, 000)
    m4_asm(FMSUBS, r6, r1, r2, r3, 000)
    m4_asm(FNMSUBS, r7, r1, r2, r3, 000)
@@ -1479,9 +1479,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(ADDI, r4, r0, 0100000010)
    m4_asm(ADDI, r5, r0, 1111110010)
    m4_asm(ADDI, r6, r0, 10001)
-   m4_asm(FSW, r0, r1, 000001000000)
-   m4_asm(FSW, r0, r2, 000001000100)
-   m4_asm(FLW, r16, r0, 000001000000)
+   //m4_asm(FSW, r0, r1, 000001000000)
+   //m4_asm(FSW, r0, r2, 000001000100)
+   //m4_asm(FLW, r16, r0, 000001000000)
    m4_asm(FLW, r17, r0, 000001000100)
    m4_asm(FMADDS, r5, r1, r2, r3, 000)
    m4_asm(FMSUBS, r6, r1, r2, r3, 000)
@@ -1706,8 +1706,8 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4_instr(R, 64, M, 01110, 101, 0000001, DIVUW)
       m4_instr(R, 64, M, 01110, 110, 0000001, REMW)
       m4_instr(R, 64, M, 01110, 111, 0000001, REMUW)
-      m4_instr(I, 32, F, 00001, 010, FLW)
-      m4_instr(S, 32, F, 01001, 010, FSW)
+      //m4_instr(I, 32, F, 00001, 010, FLW)
+      //m4_instr(S, 32, F, 01001, 010, FSW)
       m4_instr(R4, 32, F, 10000, rm, 00, FMADDS)
       m4_instr(R4, 32, F, 10001, rm, 00, FMSUBS)
       m4_instr(R4, 32, F, 10010, rm, 00, FNMSUBS)
@@ -1992,8 +1992,8 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       // Instruction requires floating point unit and is long-latency.
       // TODO. Current implementation decodes the floating type instructions seperatly.
       // Hence can have a marco or signal to differentiate the type of instruction related to a particular extension.
-      $fpu_type_instr = $is_flw_instr     ||
-                        $is_fsw_instr     ||
+      $fpu_type_instr = //$is_flw_instr     ||
+                        //$is_fsw_instr     ||
                         $is_fmadds_instr  ||
                         $is_fmsubs_instr  ||
                         $is_fmsubs_instr  ||
@@ -2190,18 +2190,18 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $lw_rslt[M4_WORD_RANGE] = 32'b0;
          $lbu_rslt[M4_WORD_RANGE] = 32'b0;
          $lhu_rslt[M4_WORD_RANGE] = 32'b0;
-         m4_ifelse_block(M4_EXT_F, 1, ['
-         $flw_rslt[M4_WORD_RANGE] = 32'b0;
-         '])
+         //m4_ifelse_block(M4_EXT_F, 1, ['
+         //$flw_rslt[M4_WORD_RANGE] = 32'b0;
+         //'])
          '], ['
          $lb_rslt[M4_WORD_RANGE] = /orig_inst$ld_rslt;
          $lh_rslt[M4_WORD_RANGE] = /orig_inst$ld_rslt;
          $lw_rslt[M4_WORD_RANGE] = /orig_inst$ld_rslt;
          $lbu_rslt[M4_WORD_RANGE] = /orig_inst$ld_rslt;
          $lhu_rslt[M4_WORD_RANGE] = /orig_inst$ld_rslt;
-         m4_ifelse_block(M4_EXT_F, 1, ['
-         $flw_rslt[M4_WORD_RANGE] = /orig_inst$ld_rslt;
-         '])
+         //m4_ifelse_block(M4_EXT_F, 1, ['
+         //$flw_rslt[M4_WORD_RANGE] = /orig_inst$ld_rslt;
+         //'])
          '])
          $addi_rslt[M4_WORD_RANGE] = /src[1]$reg_value + $raw_i_imm;  // TODO: This has its own adder; could share w/ add/sub.
          $xori_rslt[M4_WORD_RANGE] = /src[1]$reg_value ^ $raw_i_imm;
@@ -2338,14 +2338,14 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $unnatural_addr_trap = ($ld_st_word && ($addr[1:0] != 2'b00)) || ($ld_st_half && $addr[0]);
       $ld_st_cond = $ld_st && $valid_exe;
       ?$ld_st_cond
-         $addr[M4_ADDR_RANGE] = m4_ifelse(M4_EXT_F, 1, ['$is_fsw_instr ?  /fpusrc[1]$fpu_reg_value + ($ld ? $raw_i_imm : $raw_s_imm) :'])
+         $addr[M4_ADDR_RANGE] = //m4_ifelse(M4_EXT_F, 1, ['$is_fsw_instr ?  /fpusrc[1]$fpu_reg_value + ($ld ? $raw_i_imm : $raw_s_imm) :'])
                                                  /src[1]$reg_value + ($ld ? $raw_i_imm : $raw_s_imm);
          
          // Hardware assumes natural alignment. Otherwise, trap, and handle in s/w (though no s/w provided).
       $st_cond = $st && $valid_exe;
       ?$st_cond
          // Provide a value to store, naturally-aligned to memory, that will work regardless of the lower $addr bits.
-         $st_reg_value[M4_WORD_RANGE] = m4_ifelse_block(M4_EXT_F, 1, ['$is_fsw_instr ? /fpusrc[2]$fpu_reg_value :'])
+         $st_reg_value[M4_WORD_RANGE] = //m4_ifelse_block(M4_EXT_F, 1, ['$is_fsw_instr ? /fpusrc[2]$fpu_reg_value :'])
                                                         /src[2]$reg_value;
          $st_value[M4_WORD_RANGE] =
               $ld_st_word ? $st_reg_value :            // word
@@ -3556,10 +3556,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             '])
             
             // Conditions that commit results.
-            $valid_dest_reg_valid = ($dest_reg_valid && $commit) || ($second_issue m4_ifelse_block(M4_EXT_F, 1, ['&&  (!>>M4_LD_RETURN_ALIGN$is_flw_instr) && (!$fpu_second_issue_div_sqrt)']) );
+            //$valid_dest_reg_valid = ($dest_reg_valid && $commit) || ($second_issue m4_ifelse_block(M4_EXT_F, 1, ['&&  (!>>M4_LD_RETURN_ALIGN$is_flw_instr) && (!$fpu_second_issue_div_sqrt)']) );
+            $valid_dest_reg_valid = ($dest_reg_valid && $commit) || ($second_issue m4_ifelse_block(M4_EXT_F, 1, [' && (!$fpu_second_issue_div_sqrt)']) );
 
             m4_ifelse_block(M4_EXT_F, 1, ['
-            $valid_dest_fpu_reg_valid = ($dest_fpu_reg_valid && $commit) || ($fpu_second_issue_div_sqrt || ($second_issue && >>M4_LD_RETURN_ALIGN$is_flw_instr));
+            //$valid_dest_fpu_reg_valid = ($dest_fpu_reg_valid && $commit) || ($fpu_second_issue_div_sqrt || ($second_issue && >>M4_LD_RETURN_ALIGN$is_flw_instr));
+            $valid_dest_fpu_reg_valid = ($dest_fpu_reg_valid && $commit) || ($fpu_second_issue_div_sqrt);
             '])
             $valid_ld = $ld && $commit;
             $valid_st = $st && $commit;
@@ -4191,10 +4193,10 @@ m4+module_def
                      let pending = '$pending'.asBool(false);
                      let reg = parseInt(this.getIndex());
                      let regIdent = ("M4_ISA" == "MINI") ? String.fromCharCode("a".charCodeAt(0) + reg) : reg.toString();
-                     let oldValStr = mod ? `(${'$value'.asInt(NaN).toString(16)})` : "";
+                     let oldValStr = mod ? `(${'$value'.asInt(NaN).toString()})` : "";
                      this.getInitObject("reg").setText(
                         regIdent + ": " +
-                        '$value'.step(1).asInt(NaN).toString(16) + oldValStr);
+                        '$value'.step(1).asInt(NaN).toString() + oldValStr);
                      this.getInitObject("reg").setFill(pending ? "red" : mod ? "blue" : "black");
                   }
             m4_ifelse_block(M4_EXT_F, 1, ['
