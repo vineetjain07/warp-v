@@ -20,9 +20,8 @@ install:
 before_script:
   - cd formal
 script:
-  - travis_wait 180
   # Run riscv-formal for WARP-V.
-  - PATH=/home/travis/build/stevehoover/warp-v/formal/env/bin:$PATH bash -c 'make verif'
+  - while sleep 30; do PATH=/home/travis/build/stevehoover/warp-v/formal/env/bin:$PATH bash -c 'make verif'
 after_success:
 after_failure:
   # Upload files for debug.
