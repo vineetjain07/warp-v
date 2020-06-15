@@ -409,7 +409,7 @@ m4+definitions(['
          m4_defines(
             (['M4_EXT_E'], 1),
             (['M4_EXT_I'], 1),
-            (['M4_EXT_M'], 1),
+            (['M4_EXT_M'], 0),
             (['M4_EXT_A'], 0),
             (['M4_EXT_F'], 1),
             (['M4_EXT_D'], 0),
@@ -437,8 +437,8 @@ m4+definitions(['
 
    // Which program to assemble.
    // this depends on the ISA extension(s) choice
-   m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
-   //m4_ifelse(M4_EXT_F, 1, ['m4_define(['M4_PROG_NAME'], ['fpu_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   //m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   m4_ifelse(M4_EXT_F, 1, ['m4_define(['M4_PROG_NAME'], ['fpu_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
 
    // =====Done Defining Configuration=====
    
@@ -1393,7 +1393,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(LW, r5, r6, 0)
    m4_asm(ADDI, r4, r0, 101101)
    m4_asm(BGE, r8, r9, 111111111110)
-      m4_asm(ADDI, r1, r0, 011100010101)
+   m4_asm(ADDI, r1, r0, 011100010101)
    m4_asm(SLLI, r1, r1, 10100)
    m4_asm(ADDI, r10, r0, 011000000100)
    m4_asm(SLLI, r10, r10, 01000)
@@ -1499,7 +1499,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(FMINS, r17, r1, r2)
    m4_asm(FMAXS, r18, r1, r2)
    m4_asm(FCVTWS, r12, r11, 000)
-   m4_asm(FCVTWUS, r13, r11, 000)
    m4_asm(FMVXW, r5, r11)
    m4_asm(FEQS, r19, r1, r2)
    m4_asm(FLTS, r20, r1, r2)
@@ -1507,7 +1506,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(FCLASSS, r22, r1)
    m4_asm(FEQS, r19, r1, r2)
    m4_asm(FCVTSW, r23, r3, 000)
-   m4_asm(FCVTSWU, r24, r3, 000)
    m4_asm(ORI, r0, r0, 0)
    
 \TLV riscv_imem(_prog_name)
