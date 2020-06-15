@@ -1429,6 +1429,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(FCVTSW, r11, r4, 000)
    m4_asm(FCVTSW, r12, r5, 000)
    m4_asm(FCVTSW, r13, r6, 000)
+   m4_asm(FCVTWS, r8, r10, 000)
+   m4_asm(FCVTWS, r9, r11, 000)
+   m4_asm(FCVTWS, r10, r12, 000)
+   m4_asm(FCVTWS, r11, r13, 000)
    //m4_asm(FSW, r0, r1, 000001000000)
    //m4_asm(FSW, r0, r2, 000001000100)
    //m4_asm(FLW, r16, r0, 000001000000)
@@ -1962,18 +1966,19 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                         $is_fmins_instr   ||
                         $is_fmaxs_instr   ||
                         $is_fcvtws_instr  ||
-                        $is_fcvtwus_instr ||
+                        //$is_fcvtwus_instr ||
                         $is_fmvxw_instr   ||
                         $is_feqs_instr    ||
                         $is_flts_instr    ||
                         $is_fles_instr    ||
                         $is_fclasss_instr ||
                         $is_fcvtsw_instr  ||
-                        $is_fcvtswu_instr ||
+                        //$is_fcvtswu_instr ||
                         $is_fmvwx_instr;
       $fpu_div_sqrt_type_instr = $is_fdivs_instr || $is_fsqrts_instr;
       $fmvxw_type_instr = $is_fmvxw_instr;
-      $fcvtw_s_type_instr = $is_fcvtws_instr || $is_fcvtwus_instr;
+      //$fcvtw_s_type_instr = $is_fcvtws_instr || $is_fcvtwus_instr;
+      $fcvtw_s_type_instr = $is_fcvtws_instr;
       '], ['
       $fpu_type_instr = 1'b0;
       $fmvxw_type_instr = 1'b0;
