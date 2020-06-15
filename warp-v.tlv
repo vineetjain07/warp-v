@@ -1398,42 +1398,67 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    // | F-extension Test Program |
    // \==========================/
    //
-   m4_asm(ORI, r1, r0, 011111111111)
-   m4_asm(ORI, r2, r0, 011111111101)
-   m4_asm(ORI, r3, r0, 101101011011)
+   m4_asm(ADDI, r1, r0, 011100010101)
+   m4_asm(SLLI, r1, r1, 10100)
+   m4_asm(ADDI, r10, r0, 011000000100)
+   m4_asm(SLLI, r10, r10, 01000)
+   m4_asm(ADD, r1, r1, r10)
+   m4_asm(ADDI, r1, r1, 01000001)
+   m4_asm(ADDI, r2, r0, 011001011001)
+   m4_asm(SLLI, r2, r2, 10100)
+   m4_asm(ADDI, r10, r0, 010011110100)
+   m4_asm(SLLI, r10, r10, 01000)
+   m4_asm(ADD, r2, r2, r10)
+   m4_asm(ADDI, r2, r2, 01000000)
+   m4_asm(ADDI, r3, r0, 010011011101)
+   m4_asm(SLLI, r3, r3, 10100)
+   m4_asm(ADDI, r10, r0, 111100010100)
+   m4_asm(SLLI, r10, r10, 01000)
+   m4_asm(ADD, r3, r3, r10)
+   m4_asm(ADDI, r3, r3, 00000000)
    m4_asm(FMVWX, r1, r1)
    m4_asm(FMVWX, r2, r2)
    m4_asm(FMVWX, r3, r3)
-   m4_asm(FSW, r0, r1, 000001000000)
-   m4_asm(FSW, r0, r2, 000001000100)
-   m4_asm(FLW, r16, r0, 000001000000)
-   m4_asm(FLW, r17, r0, 000001000100)
-   m4_asm(FMADDS, r5, r1, r2, r3, 000)
-   m4_asm(FMSUBS, r6, r1, r2, r3, 000)
-   m4_asm(FNMSUBS, r7, r1, r2, r3, 000)
-   m4_asm(FNMADDS, r8, r1, r2, r3, 000)
-   m4_asm(FADDS, r9, r1, r2, 000)
-   m4_asm(FSUBS, r10, r1, r2, 000)
-   m4_asm(FMULS, r11, r1, r2, 000)
-   m4_asm(FADDS, r9, r6, r6, 000)
-   m4_asm(FMULS, r11, r3, r3, 000)
-   m4_asm(FDIVS, r12, r1, r2, 000)
-   m4_asm(FSQRTS, r13, r1, 000)
-   m4_asm(FSGNJS, r14, r1, r2)
-   m4_asm(FSGNJNS, r15, r1, r2)
-   m4_asm(FSGNJXS, r16, r1, r2)
-   m4_asm(FMINS, r17, r1, r2)
-   m4_asm(FMAXS, r18, r1, r2)
-   m4_asm(FCVTWS, r12, r11, 000)
-   m4_asm(FCVTWUS, r13, r11, 000)
-   m4_asm(FMVXW, r5, r11)
-   m4_asm(FEQS, r19, r1, r2)
-   m4_asm(FLTS, r20, r1, r2)
-   m4_asm(FLES, r21, r1, r2)
-   m4_asm(FCLASSS, r22, r1)
-   m4_asm(FEQS, r19, r1, r2)
-   m4_asm(FCVTSW, r23, r3, 000)
-   m4_asm(FCVTSWU, r24, r3, 000)
+   m4_asm(ADDI, r4, r0, 0100000010)
+   m4_asm(ADDI, r5, r0, 1111110010)
+   m4_asm(ADDI, r6, r0, 10001)
+   //m4_asm(FCVTWS, r12, r11, 000)
+   //m4_asm(FCVTWUS, r13, r11, 000)
+   m4_asm(FCVTSW, r9, r2, 000)
+   m4_asm(FCVTSW, r10, r3, 000)
+   m4_asm(FCVTSW, r11, r4, 000)
+   m4_asm(FCVTSW, r12, r5, 000)
+   m4_asm(FCVTSW, r13, r6, 000)
+   //m4_asm(FSW, r0, r1, 000001000000)
+   //m4_asm(FSW, r0, r2, 000001000100)
+   //m4_asm(FLW, r16, r0, 000001000000)
+   //m4_asm(FLW, r17, r0, 000001000100)
+   //m4_asm(FMADDS, r5, r1, r2, r3, 000)
+   //m4_asm(FMSUBS, r6, r1, r2, r3, 000)
+   //m4_asm(FNMSUBS, r7, r1, r2, r3, 000)
+   //m4_asm(FNMADDS, r8, r1, r2, r3, 000)
+   //m4_asm(FADDS, r9, r1, r2, 000)
+   //m4_asm(FSUBS, r10, r1, r2, 000)
+   //m4_asm(FMULS, r11, r1, r2, 000)
+   //m4_asm(FADDS, r9, r6, r6, 000)
+   //m4_asm(FMULS, r11, r3, r3, 000)
+   //m4_asm(FDIVS, r12, r1, r2, 000)
+   //m4_asm(FSQRTS, r13, r1, 000)
+   //m4_asm(FSGNJS, r14, r1, r2)
+   //m4_asm(FSGNJNS, r15, r1, r2)
+   //m4_asm(FSGNJXS, r16, r1, r2)
+   //m4_asm(FMINS, r17, r1, r2)
+   //m4_asm(FMAXS, r18, r1, r2)
+   //m4_asm(FCVTWS, r12, r11, 000)
+   //m4_asm(FCVTWUS, r13, r11, 000)
+   //m4_asm(FMVXW, r5, r11)
+   //m4_asm(FEQS, r19, r1, r2)
+   //m4_asm(FLTS, r20, r1, r2)
+   //m4_asm(FLES, r21, r1, r2)
+   //m4_asm(FCLASSS, r22, r1)
+   //m4_asm(FEQS, r19, r1, r2)
+   //m4_asm(FCVTSW, r23, r3, 000)
+   //m4_asm(FCVTSWU, r24, r3, 000)
    m4_asm(ORI, r0, r0, 0)
    
 \TLV riscv_imem(_prog_name)
@@ -1650,14 +1675,14 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4_instr(R, 32, F, 10100, 000, 0010100, FMINS)
       m4_instr(R, 32, F, 10100, 001, 0010100, FMAXS)
       m4_instr(R2, 32, F, 10100, rm, 1100000, 00000, FCVTWS)
-      m4_instr(R2, 32, F, 10100, rm, 1100000, 00001, FCVTWUS)
+      //m4_instr(R2, 32, F, 10100, rm, 1100000, 00001, FCVTWUS)
       m4_instr(R2, 32, F, 10100, 000, 1110000, 00000, FMVXW)
       m4_instr(R, 32, F, 10100, 010, 1010000, FEQS)
       m4_instr(R, 32, F, 10100, 001, 1010000, FLTS)
       m4_instr(R, 32, F, 10100, 000, 1010000, FLES)
       m4_instr(R2, 32, F, 10100, 001, 1110000, 00000, FCLASSS)
       m4_instr(R2, 32, F, 10100, rm, 1101000, 00000, FCVTSW)
-      m4_instr(R2, 32, F, 10100, rm, 1101000, 00001, FCVTSWU)
+      //m4_instr(R2, 32, F, 10100, rm, 1101000, 00001, FCVTSWU)
       m4_instr(R2, 32, F, 10100, 000, 1111000, 00000, FMVWX)
       m4_instr(R2, 64, F, 10100, rm, 1100000, 00010, FCVTLS)
       m4_instr(R2, 64, F, 10100, rm, 1100000, 00011, FCVTLUS)
@@ -1954,7 +1979,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       $fmvxw_type_instr = 1'b0;
       $fcvtw_s_type_instr = 1'b0;
       $fpu_div_sqrt_type_instr = 1'b0;
-      `BOGUS_USE($fpu_type_instr $fmvxw_type_instr $fcvtw_s_type_instr $fpu_div_sqrt_type_instr)
       '])
 
       $is_srli_srai_instr = $is_srli_instr || $is_srai_instr;
@@ -2204,14 +2228,14 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                         ({5{$is_fmins_instr  }}  & 5'he ) |
                         ({5{$is_fmaxs_instr  }}  & 5'hf ) |
                         ({5{$is_fcvtws_instr }}  & 5'h10) |
-                        ({5{$is_fcvtwus_instr}}  & 5'h11) |
+                        //({5{$is_fcvtwus_instr}}  & 5'h11) |
                         ({5{$is_fmvxw_instr  }}  & 5'h12) |
                         ({5{$is_feqs_instr   }}  & 5'h13) |
                         ({5{$is_flts_instr   }}  & 5'h14) |
                         ({5{$is_fles_instr   }}  & 5'h15) |
                         ({5{$is_fclasss_instr}}  & 5'h16) |
                         ({5{$is_fcvtsw_instr }}  & 5'h17) |
-                        ({5{$is_fcvtswu_instr}}  & 5'h18) |
+                        //({5{$is_fcvtswu_instr}}  & 5'h18) |
                         ({5{$is_fmvwx_instr  }}  & 5'h19);
       // Needed for division-sqrt module  
       $nreset = ! *reset;
@@ -2238,14 +2262,14 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       $fmins_rslt[M4_WORD_RANGE] = /fpu1$output_result;
       $fmaxs_rslt[M4_WORD_RANGE] = /fpu1$output_result;
       $fcvtws_rslt[M4_WORD_RANGE] = /fpu1$int_output;
-      $fcvtwus_rslt[M4_WORD_RANGE] = /fpu1$int_output;
+      //$fcvtwus_rslt[M4_WORD_RANGE] = /fpu1$int_output;
       $fmvxw_rslt[M4_WORD_RANGE] = /fpusrc[1]$fpu_reg_value;
       $feqs_rslt[M4_WORD_RANGE] = {31'b0 , /fpu1$eq_compare};
       $flts_rslt[M4_WORD_RANGE] = {31'b0 , /fpu1$lt_compare}; 
       $fles_rslt[M4_WORD_RANGE] = {31'b0 ,{/fpu1$eq_compare & /fpu1$lt_compare}};
       $fclasss_rslt[M4_WORD_RANGE] = {28'b0, /fpu1$output_class};
       $fcvtsw_rslt[M4_WORD_RANGE] = /fpu1$output_result;
-      $fcvtswu_rslt[M4_WORD_RANGE] = /fpu1$output_result;
+      //$fcvtswu_rslt[M4_WORD_RANGE] = /fpu1$output_result;
       $fmvwx_rslt[M4_WORD_RANGE] = /src[1]$reg_value;
       
       // Pulling Instructions from /orig_inst scope
@@ -3147,8 +3171,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                                                    7'b0;
 
       $stall_cnt_max_fpu = ($fpu_stall_cnt == M4_FPU_DIV_LATENCY);
-      //$trigger_next_pc_fpu_div_sqrt_second_issue = ($fpu_div_sqrt_stall && $stall_cnt_max_fpu) || ($fpu_div_sqrt_stall && |fetch/instr/fpu1$exceptionFlags_div_sqrt[3]) || ( |fetch/instr/fpu1>>1$in_ready && |fetch/instr/fpu1$outvalid);
-      $trigger_next_pc_fpu_div_sqrt_second_issue = ($fpu_div_sqrt_stall && $stall_cnt_max_fpu);
+      $trigger_next_pc_fpu_div_sqrt_second_issue = ($fpu_div_sqrt_stall && $stall_cnt_max_fpu) || ($fpu_div_sqrt_stall && |fetch/instr/fpu1$exceptionFlags_div_sqrt[3]) || ( |fetch/instr/fpu1>>1$in_ready && |fetch/instr/fpu1$outvalid);
 
 //=========================//
 //                         //
@@ -4119,10 +4142,10 @@ m4+module_def
                      let pending = '$pending'.asBool(false);
                      let reg = parseInt(this.getIndex());
                      let regIdent = ("M4_ISA" == "MINI") ? String.fromCharCode("a".charCodeAt(0) + reg) : reg.toString();
-                     let oldValStr = mod ? `(${'$value'.asInt(NaN).toString()})` : "";
+                     let oldValStr = mod ? `(${'$value'.asInt(NaN).toString(16)})` : "";
                      this.getInitObject("reg").setText(
                         regIdent + ": " +
-                        '$value'.step(1).asInt(NaN).toString() + oldValStr);
+                        '$value'.step(1).asInt(NaN).toString(16) + oldValStr);
                      this.getInitObject("reg").setFill(pending ? "red" : mod ? "blue" : "black");
                   }
             m4_ifelse_block(M4_EXT_F, 1, ['
