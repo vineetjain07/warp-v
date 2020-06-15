@@ -10,7 +10,6 @@ cache:
 
 before_install:
 install:
-  - "travis_wait 180"
   # If env is not provided by the cache and marked passed, remove any cached env results and build it.
   - ( cd formal && if [[ ! -e env/PASSED ]]; then rm -rf env/* && ./make_env.sh; fi )
   # Record the commit ID of the latest yosys.
@@ -21,6 +20,7 @@ install:
 before_script:
   - cd formal
 script:
+  - "travis_wait 180 &&"
   # Run riscv-formal for WARP-V.
   - PATH=/home/travis/build/stevehoover/warp-v/formal/env/bin:$PATH bash -c 'make verif'
 after_success:
