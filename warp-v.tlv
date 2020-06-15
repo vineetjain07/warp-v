@@ -1413,7 +1413,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(FMINS, r17, r1, r2)
    m4_asm(FMAXS, r18, r1, r2)
    m4_asm(FCVTWS, r12, r11, 000)
-   m4_asm(FCVTWUS, r13, r11, 000)
+   //m4_asm(FCVTWUS, r13, r11, 000)
    m4_asm(FMVXW, r5, r11)
    m4_asm(FEQS, r19, r1, r2)
    m4_asm(FLTS, r20, r1, r2)
@@ -1421,7 +1421,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(FCLASSS, r22, r1)
    m4_asm(FEQS, r19, r1, r2)
    m4_asm(FCVTSW, r23, r3, 000)
-   m4_asm(FCVTSWU, r24, r3, 000)
+   //m4_asm(FCVTSWU, r24, r3, 000)
    m4_asm(ORI, r0, r0, 0)
 
 \TLV riscv_divmul_test_prog()
