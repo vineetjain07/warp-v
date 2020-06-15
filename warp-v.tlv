@@ -1368,7 +1368,32 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(BLT, r1, r2, 1111111110000) //  ^- branch back if cnt < 10
    m4_asm(LW, r4, r6,   111111111100) //     load the final value into tmp
    m4_asm(BGE, r1, r2, 1111111010100) //     TERMINATE by branching to -1
-   m4_asm(ADDI, r1, r0, 011100010101)
+
+
+\TLV riscv_divmul_test_prog()
+   // /==========================\
+   // | M-extension Test Program |
+   // \==========================/
+   //
+   //3 MULs followed by 3 DIVs, check r11-r15 for correct results
+
+   m4_asm(ORI, r8, r0, 1011)
+   m4_asm(ORI, r9, r0, 1010)
+   m4_asm(ORI, r10, r0, 10101010)
+   m4_asm(MUL, r11, r8, r9)
+   m4_asm(ORI, r6, r0, 0)
+   m4_asm(SW, r6, r11, 0)
+   m4_asm(MUL, r12, r9, r10)
+   m4_asm(LW, r4, r6, 0)
+   m4_asm(ADDI, r6, r6, 100)
+   m4_asm(SW, r6, r12, 0)
+   m4_asm(MUL, r13, r8, r10)
+   m4_asm(DIV, r14, r11, r8)
+   m4_asm(DIV, r15, r13, r10)
+   m4_asm(LW, r5, r6, 0)
+   m4_asm(ADDI, r4, r0, 101101)
+   m4_asm(BGE, r8, r9, 111111111110)
+      m4_asm(ADDI, r1, r0, 011100010101)
    m4_asm(SLLI, r1, r1, 10100)
    m4_asm(ADDI, r10, r0, 011000000100)
    m4_asm(SLLI, r10, r10, 01000)
@@ -1423,30 +1448,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(FCVTSW, r23, r3, 000)
    //m4_asm(FCVTSWU, r24, r3, 000)
    m4_asm(ORI, r0, r0, 0)
-
-\TLV riscv_divmul_test_prog()
-   // /==========================\
-   // | M-extension Test Program |
-   // \==========================/
-   //
-   //3 MULs followed by 3 DIVs, check r11-r15 for correct results
-
-   m4_asm(ORI, r8, r0, 1011)
-   m4_asm(ORI, r9, r0, 1010)
-   m4_asm(ORI, r10, r0, 10101010)
-   m4_asm(MUL, r11, r8, r9)
-   m4_asm(ORI, r6, r0, 0)
-   m4_asm(SW, r6, r11, 0)
-   m4_asm(MUL, r12, r9, r10)
-   m4_asm(LW, r4, r6, 0)
-   m4_asm(ADDI, r6, r6, 100)
-   m4_asm(SW, r6, r12, 0)
-   m4_asm(MUL, r13, r8, r10)
-   m4_asm(DIV, r14, r11, r8)
-   m4_asm(DIV, r15, r13, r10)
-   m4_asm(LW, r5, r6, 0)
-   m4_asm(ADDI, r4, r0, 101101)
-   m4_asm(BGE, r8, r9, 111111111110)
 
 \TLV riscv_fpu_test_prog()
    // /==========================\
