@@ -411,7 +411,7 @@ m4+definitions(['
             (['M4_EXT_I'], 1),
             (['M4_EXT_M'], 1),
             (['M4_EXT_A'], 0),
-            (['M4_EXT_F'], 1),
+            (['M4_EXT_F'], 0),
             (['M4_EXT_D'], 0),
             (['M4_EXT_Q'], 0),
             (['M4_EXT_L'], 0),
@@ -1980,10 +1980,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       //$fcvtw_s_type_instr = $is_fcvtws_instr || $is_fcvtwus_instr;
       $fcvtw_s_type_instr = $is_fcvtws_instr;
       '], ['
-      $fpu_type_instr = 1'b0;
-      $fmvxw_type_instr = 1'b0;
-      $fcvtw_s_type_instr = 1'b0;
-      $fpu_div_sqrt_type_instr = 1'b0;
+      //`BOGUS_USE($fpu_type_instr $fmvxw_type_instr $fcvtw_s_type_instr $fpu_div_sqrt_type_instr)
       '])
 
       $is_srli_srai_instr = $is_srli_instr || $is_srai_instr;
@@ -3046,6 +3043,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 //==================//
 
 \SV
+   /* verilator lint_off WIDTH */
+      /* verilator lint_off CASEINCOMPLETE */   
+      m4_include_url(['https:/']['/raw.githubusercontent.com/vineetjain07/warp-v/master/fpu/topmodule/topmodule.tlv'])
+      /* verilator lint_on WIDTH */
    m4_ifelse_block(M4_EXT_F, 1, ['
       m4_ifelse(M4_ISA, ['RISCV'], [''], ['m4_errprint(['F-ext supported for RISC-V only.']m4_new_line)'])
       /* verilator lint_off WIDTH */
