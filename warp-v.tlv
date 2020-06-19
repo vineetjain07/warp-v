@@ -411,7 +411,7 @@ m4+definitions(['
             (['M4_EXT_I'], 1),
             (['M4_EXT_M'], 1),
             (['M4_EXT_A'], 0),
-            (['M4_EXT_F'], 0),
+            (['M4_EXT_F'], 1),
             (['M4_EXT_D'], 0),
             (['M4_EXT_Q'], 0),
             (['M4_EXT_L'], 0),
@@ -1426,43 +1426,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(SLLI, r10, r10, 01000)
    m4_asm(ADD, r3, r3, r10)
    m4_asm(ADDI, r3, r3, 00000000)
-   m4_asm(FMVWX, r1, r1)
-   m4_asm(FMVWX, r2, r2)
-   m4_asm(FMVWX, r3, r3)
    m4_asm(ADDI, r4, r0, 0100000010)
    m4_asm(ADDI, r5, r0, 1111110010)
    m4_asm(ADDI, r6, r0, 10001)
    m4_asm(FCVTSW, r9, r2, 000)
    m4_asm(FCVTSW, r10, r3, 000)
    m4_asm(FCVTWS, r11, r13, 000)
-   //m4_asm(FSW, r0, r1, 000001000000)
-   //m4_asm(FSW, r0, r2, 000001000100)
-   //m4_asm(FLW, r16, r0, 000001000000)
-   //m4_asm(FLW, r17, r0, 000001000100)
-   //m4_asm(FMADDS, r5, r1, r2, r3, 000)
-   //m4_asm(FMSUBS, r6, r1, r2, r3, 000)
-   //m4_asm(FNMSUBS, r7, r1, r2, r3, 000)
-   //m4_asm(FNMADDS, r8, r1, r2, r3, 000)
-   //m4_asm(FADDS, r9, r1, r2, 000)
-   //m4_asm(FSUBS, r10, r1, r2, 000)
-   //m4_asm(FMULS, r11, r1, r2, 000)
-   //m4_asm(FADDS, r9, r6, r6, 000)
-   //m4_asm(FMULS, r11, r3, r3, 000)
-   //m4_asm(FDIVS, r12, r1, r2, 000)
-   //m4_asm(FSQRTS, r13, r1, 000)
-   //m4_asm(FSGNJS, r14, r1, r2)
-   //m4_asm(FSGNJNS, r15, r1, r2)
-   //m4_asm(FSGNJXS, r16, r1, r2)
-   //m4_asm(FMINS, r17, r1, r2)
-   //m4_asm(FMAXS, r18, r1, r2)
-   //m4_asm(FCVTWS, r12, r11, 000)
-   //m4_asm(FMVXW, r5, r11)
-   //m4_asm(FEQS, r19, r1, r2)
-   //m4_asm(FLTS, r20, r1, r2)
-   //m4_asm(FLES, r21, r1, r2)
-   //m4_asm(FCLASSS, r22, r1)
-   //m4_asm(FEQS, r19, r1, r2)
-   //m4_asm(FCVTSW, r23, r3, 000)
    m4_asm(ORI, r0, r0, 0)
    
 \TLV riscv_imem(_prog_name)
@@ -1678,16 +1647,16 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4_instr(R, 32, F, 10100, 010, 0010000, FSGNJXS)
       m4_instr(R, 32, F, 10100, 000, 0010100, FMINS)
       m4_instr(R, 32, F, 10100, 001, 0010100, FMAXS)
-      m4_instr(R2, 32, F, 10100, rm, 1100000, 00000, FCVTWS)
-      m4_instr(R2, 32, F, 10100, rm, 1100000, 00001, FCVTWUS)
-      m4_instr(R2, 32, F, 10100, 000, 1110000, 00000, FMVXW)
+      //m4_instr(R2, 32, F, 10100, rm, 1100000, 00000, FCVTWS)
+      //m4_instr(R2, 32, F, 10100, rm, 1100000, 00001, FCVTWUS)
+      //m4_instr(R2, 32, F, 10100, 000, 1110000, 00000, FMVXW)
       m4_instr(R, 32, F, 10100, 010, 1010000, FEQS)
       m4_instr(R, 32, F, 10100, 001, 1010000, FLTS)
       m4_instr(R, 32, F, 10100, 000, 1010000, FLES)
       m4_instr(R2, 32, F, 10100, 001, 1110000, 00000, FCLASSS)
-      m4_instr(R2, 32, F, 10100, rm, 1101000, 00000, FCVTSW)
-      m4_instr(R2, 32, F, 10100, rm, 1101000, 00001, FCVTSWU)
-      m4_instr(R2, 32, F, 10100, 000, 1111000, 00000, FMVWX)
+      //m4_instr(R2, 32, F, 10100, rm, 1101000, 00000, FCVTSW)
+      //m4_instr(R2, 32, F, 10100, rm, 1101000, 00001, FCVTSWU)
+      //m4_instr(R2, 32, F, 10100, 000, 1111000, 00000, FMVWX)
       m4_instr(R2, 64, F, 10100, rm, 1100000, 00010, FCVTLS)
       m4_instr(R2, 64, F, 10100, rm, 1100000, 00011, FCVTLUS)
       m4_instr(R2, 64, F, 10100, rm, 1101000, 00010, FCVTSL)
@@ -1965,20 +1934,20 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                         $is_fsgnjxs_instr ||
                         $is_fmins_instr   ||
                         $is_fmaxs_instr   ||
-                        $is_fcvtws_instr  ||
-                        $is_fcvtwus_instr ||
-                        $is_fmvxw_instr   ||
+                        //$is_fcvtws_instr  ||
+                        //$is_fcvtwus_instr ||
+                        //$is_fmvxw_instr   ||
                         $is_feqs_instr    ||
                         $is_flts_instr    ||
                         $is_fles_instr    ||
-                        $is_fclasss_instr ||
-                        $is_fcvtsw_instr  ||
-                        $is_fcvtswu_instr ||
-                        $is_fmvwx_instr;
+                        $is_fclasss_instr;
+                        //$is_fcvtsw_instr  ||
+                        //$is_fcvtswu_instr ||
+                        //$is_fmvwx_instr;
       $fpu_div_sqrt_type_instr = $is_fdivs_instr || $is_fsqrts_instr;
-      $fmvxw_type_instr = $is_fmvxw_instr;
-      $fcvtw_s_type_instr = $is_fcvtws_instr || $is_fcvtwus_instr;
-      $fcvtw_s_type_instr = $is_fcvtws_instr;
+      //$fmvxw_type_instr = $is_fmvxw_instr;
+      //$fcvtw_s_type_instr = $is_fcvtws_instr || $is_fcvtwus_instr;
+      //$fcvtw_s_type_instr = $is_fcvtws_instr;
       '])
 
       $is_srli_srai_instr = $is_srli_instr || $is_srai_instr;
@@ -2010,7 +1979,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    // Condition signals must not themselves be conditioned (currently).
    $dest_reg[M4_REGS_INDEX_RANGE] = m4_ifelse(M4_EXT_M, 1, ['$second_issue_div_mul ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$divmul_dest_reg :'])
                                     $second_issue_ld ? |fetch/instr/orig_inst$dest_reg : $raw_rd;
-   $dest_reg_valid = m4_ifelse(M4_EXT_F, 1, ['((! $fpu_type_instr) ||  $fmvxw_type_instr || $fcvtw_s_type_instr) &&']) (($valid_decode && ! $is_s_type && ! $is_b_type) || $second_issue) &&
+   $dest_reg_valid = m4_ifelse(M4_EXT_F, 1, ['((! $fpu_type_instr)) &&']) (($valid_decode && ! $is_s_type && ! $is_b_type) || $second_issue) &&
                      | $dest_reg;   // r0 not valid.
    
    m4_ifelse_block(M4_EXT_F, 1, ['
@@ -2025,7 +1994,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    $dest_fpu_reg[M4_FPUREGS_INDEX_RANGE] = $fpu_second_issue_div_sqrt ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$fpu_div_sqrt_dest_reg :
                                     $second_issue_ld ? |fetch/instr/orig_inst$dest_fpu_reg : $raw_rd;
 
-   $dest_fpu_reg_valid = ($fpu_type_instr && (! $fmvxw_type_instr) && (! $fcvtw_s_type_instr) ) && (($valid_decode && ! $is_s_type && ! $is_b_type) || $second_issue) &&
+   $dest_fpu_reg_valid = ($fpu_type_instr  ) && (($valid_decode && ! $is_s_type && ! $is_b_type) || $second_issue) &&
                      | $dest_fpu_reg;   // r0 not valid.
    '])
    
@@ -2227,16 +2196,16 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                         ({5{$is_fsgnjxs_instr}}  & 5'hd ) |
                         ({5{$is_fmins_instr  }}  & 5'he ) |
                         ({5{$is_fmaxs_instr  }}  & 5'hf ) |
-                        ({5{$is_fcvtws_instr }}  & 5'h10) |
+                        //({5{$is_fcvtws_instr }}  & 5'h10) |
                         //({5{$is_fcvtwus_instr}}  & 5'h11) |
-                        ({5{$is_fmvxw_instr  }}  & 5'h12) |
+                        //({5{$is_fmvxw_instr  }}  & 5'h12) |
                         ({5{$is_feqs_instr   }}  & 5'h13) |
                         ({5{$is_flts_instr   }}  & 5'h14) |
                         ({5{$is_fles_instr   }}  & 5'h15) |
-                        ({5{$is_fclasss_instr}}  & 5'h16) |
-                        ({5{$is_fcvtsw_instr }}  & 5'h17) |
+                        ({5{$is_fclasss_instr}}  & 5'h16);
+                        //({5{$is_fcvtsw_instr }}  & 5'h17) |
                         //({5{$is_fcvtswu_instr}}  & 5'h18) |
-                        ({5{$is_fmvwx_instr  }}  & 5'h19);
+                        //({5{$is_fmvwx_instr  }}  & 5'h19);
       // Needed for division-sqrt module  
       $nreset = ! *reset;
       $clock = *clk;
@@ -2261,21 +2230,21 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       $fsgnjxs_rslt[M4_WORD_RANGE] = $fsgnjxs_output;
       $fmins_rslt[M4_WORD_RANGE] = /fpu1$output_result;
       $fmaxs_rslt[M4_WORD_RANGE] = /fpu1$output_result;
-      $fcvtws_rslt[M4_WORD_RANGE] = /fpu1$int_output;
-      $fcvtwus_rslt[M4_WORD_RANGE] = /fpu1$int_output;
-      $fmvxw_rslt[M4_WORD_RANGE] = /fpusrc[1]$fpu_reg_value;
+      //$fcvtws_rslt[M4_WORD_RANGE] = /fpu1$int_output;
+      //$fcvtwus_rslt[M4_WORD_RANGE] = /fpu1$int_output;
+      //$fmvxw_rslt[M4_WORD_RANGE] = /fpusrc[1]$fpu_reg_value;
       $feqs_rslt[M4_WORD_RANGE] = {31'b0 , /fpu1$eq_compare};
       $flts_rslt[M4_WORD_RANGE] = {31'b0 , /fpu1$lt_compare}; 
       $fles_rslt[M4_WORD_RANGE] = {31'b0 ,{/fpu1$eq_compare & /fpu1$lt_compare}};
       $fclasss_rslt[M4_WORD_RANGE] = {28'b0, /fpu1$output_class};
-      $fcvtsw_rslt[M4_WORD_RANGE] = /fpu1$output_result;
-      $fcvtswu_rslt[M4_WORD_RANGE] = /fpu1$output_result;
-      $fmvwx_rslt[M4_WORD_RANGE] = /src[1]$reg_value;
+      //$fcvtsw_rslt[M4_WORD_RANGE] = /fpu1$output_result;
+      //$fcvtswu_rslt[M4_WORD_RANGE] = /fpu1$output_result;
+      //$fmvwx_rslt[M4_WORD_RANGE] = /src[1]$reg_value;
       
       // Pulling Instructions from /orig_inst scope
       $fdivs_rslt[M4_WORD_RANGE] = /orig_inst$late_rslt;
       $fsqrts_rslt[M4_WORD_RANGE] = /orig_inst$late_rslt;
-      `BOGUS_USE(/fpu1$in_ready /fpu1$sqrtresult /fpu1$unordered /fpu1$exception_invaild_output /fpu1$exception_infinite_output /fpu1$exception_overflow_output /fpu1$exception_underflow_output /fpu1$exception_inexact_output)
+      `BOGUS_USE(/fpu1$int_output /fpu1$in_ready /fpu1$sqrtresult /fpu1$unordered /fpu1$exception_invaild_output /fpu1$exception_infinite_output /fpu1$exception_overflow_output /fpu1$exception_underflow_output /fpu1$exception_inexact_output)
       '])
          
    // CSR logic
@@ -3166,7 +3135,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    @M4_EXECUTE_STAGE
       {$fpu_div_sqrt_stall, $fpu_stall_cnt[5:0]} =    $reset ? 7'b0 :
                                                    <<m4_eval(M4_EXECUTE_STAGE - M4_NEXT_PC_STAGE)$fpu_second_issue_div_sqrt ? 7'b0 :
-
                                                    ($commit && $fpu_div_sqrt_type_instr) ? {$fpu_div_sqrt_type_instr, 6'b1} :
                                                    >>1$fpu_div_sqrt_stall ? {1'b1, >>1$fpu_stall_cnt + 6'b1} :
                                                    7'b0;
