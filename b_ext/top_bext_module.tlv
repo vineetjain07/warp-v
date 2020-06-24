@@ -163,7 +163,7 @@
    
 // 28) BREV (bit-wise reversal generalized)
 // e.g. m4+brev_final(|pipe, /brev_stage, 32, 32, 0, 1, $input, $sft_amt, $output)
-\TLV brev_final(/_top,/_brev_stage,#_constbits,#_varbits,#_stage,#_stageinc,$_data_value,$sft_amt,$resultq,|pipe,/brev_stage) 
+\TLV brev_final(/_top,/_brev_stage,#_constbits,#_varbits,#_stage,#_stageinc,$_data_value,$sft_amt,$resultq) 
    m4_pushdef(['m4_brev_stage'], m4_strip_prefix(/_brev_stage))
    m4_ifelse_block(m4_eval(#_stage == 0 ), 1, ['
    /_brev_stage[''][(#_constbits - 1) : 0]
