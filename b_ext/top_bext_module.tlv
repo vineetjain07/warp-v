@@ -189,7 +189,7 @@
 \TLV bext_dep(#_number,/_top ,#_xlen, #_is_grev, #_is_shfl, #_latency, $_clk, $_reset, $_din_valid, $_din_ready, $_din_rs1, $_din_rs2, $_din_insn3, $_din_insn13, $_din_insn14, $_din_insn29, $_din_insn30, $_dout_valid, $_dout_ready, $_dout_rd)
    \SV_plus
       rvb_bextdep#(#_xlen,#_is_grev,#_is_shfl,#_latency)
-      rvb_bextdep#_number($_clk, $_reset, |pipe$_din_valid, $['']$_din_ready, |pipe$_din_rs1[#_xlen - 1 : 0], |pipe$_din_rs2[#_xlen - 1 : 0], |pipe$_din_insn3, |pipe$_din_insn13, |pipe$_din_insn14, |pipe$_din_insn29, |pipe$_din_insn30, $['']$_dout_valid, |pipe$_dout_ready, $['']$_dout_rd);
+      rvb_bextdep#_number($_clk, $_reset, /_top$_din_valid, $['']$_din_ready, /_top$_din_rs1[#_xlen - 1 : 0], /_top$_din_rs2[#_xlen - 1 : 0], /_top$_din_insn3, /_top$_din_insn13, /_top$_din_insn14, /_top$_din_insn29, /_top$_din_insn30, $['']$_dout_valid, /_top$_dout_ready, $['']$_dout_rd);
 
 // 30) Bit-Field Place
 // The bit field place(bfp) instruction places up to XLEN/2 LSB bits from rs2 into the value in rs1.
