@@ -204,7 +204,7 @@
    $off[5:0] = $cfg & (#_XLEN - 1);
    $mask[(#_XLEN - 1) : 0] = ((1 << ($len[4:0] + 1)) - 1) << $off;
    $data[ (#_XLEN ) - 1 : 0] = $_input2 << $off;
-   $_output[ (#_XLEN - 1) : 0] = ($data & $mask) | ($rs1 & ~$mask);
+   $_output[ (#_XLEN - 1) : 0] = ($data & $mask) | ($_input1 & ~$mask);
    
 // 31) Carry-Less Multiply (clmul,  clmulh,  clmulr)
 // This marco is inheritated from RISC-V bitmanip draft verilog module.
