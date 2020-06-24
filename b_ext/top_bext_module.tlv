@@ -28,8 +28,8 @@
    /_ctz_stage['']0[#_varbits - 1 : 0]
       $reg_val = /_top$_data_value[31 - #m4_ctz_stage['']0];
    /_reverse
-      $reverse[#_varbits - 1 : 0] = /_top/_ctz_stage['']0[*]$reg_val;
-   m4+clz_final(/_top,/_ctz_stage,#_varbits,#_stage,#_stageinc,/_top/_reverse$reverse, $_ctz_output)
+      $reverse_ctz[#_varbits - 1 : 0] = /_top/_ctz_stage['']0[*]$reg_val;
+   m4+clz_final(/_top,/_ctz_stage,#_varbits,#_stage,#_stageinc,/_reverse$reverse_ctz, $_ctz_output)
    m4_popdef(['m4_ctz_stage'])
    
 // 3) popcnt (count no. of '1' in the input)
