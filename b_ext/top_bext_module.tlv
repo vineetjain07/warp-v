@@ -225,7 +225,7 @@
 // Ternary Bit-Manipulation Instructions
 // 33) Conditional Mix (cmix)
 \TLV cmix($_input1,$_input2,$_input3,$_output,#_XLEN)
-   $_output[#_XLEN - 1 : 0] = (($_input1[#_XLEN - 1 : 0] & $_input2[#_XLEN - 1 : 0]) | ($_input1[#_XLEN - 1 : 0] & ~$_input2[#_XLEN - 1 : 0]));
+   $_output[#_XLEN - 1 : 0] = (($_input1[#_XLEN - 1 : 0] & $_input2[#_XLEN - 1 : 0]) | ($_input3[#_XLEN - 1 : 0] & (~ $_input2[#_XLEN - 1 : 0])));
 
 // 34) Conditional Move (cmov)
 // The cmov instruction helps avoiding branches, which can lead to better performance, and
