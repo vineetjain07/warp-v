@@ -438,9 +438,9 @@ m4+definitions(['
 
    // Which program to assemble.
    // this depends on the ISA extension(s) choice
-   m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   //m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
    //m4_ifelse(M4_EXT_F, 1, ['m4_define(['M4_PROG_NAME'], ['fpu_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
-   //m4_ifelse(M4_EXT_B, 1, ['m4_define(['M4_PROG_NAME'], ['bmi_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   m4_ifelse(M4_EXT_B, 1, ['m4_define(['M4_PROG_NAME'], ['bmi_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
 
    // =====Done Defining Configuration=====
    
@@ -1482,7 +1482,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(SRO, r20, r1, r2)
    m4_asm(ROL, r20, r1, r2)
    m4_asm(ROR, r9, r1, r2)
-   m4_asm(LW, r4, r6, 0)
+   //m4_asm(LW, r4, r6, 0)
    m4_asm(SBCLR, r10, r1, r2)
    m4_asm(SBSET, r11, r1, r2)
    m4_asm(SBINV, r12, r1, r2)
@@ -1502,7 +1502,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(CLMULR, r15, r1, r2)
    m4_asm(CLZ, r19, r1)
    m4_asm(CTZ, r20, r1)
-   m4_asm(PCNT, r21, r1)
+   //m4_asm(PCNT, r21, r1)
    m4_asm(CRC32B, r22, r1)
    m4_asm(CRC32H, r23, r1)
    m4_asm(CRC32W, r24, r1)
@@ -1867,7 +1867,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       //m4_instr(R4, 32, B, 00100, 101, 10, FSRI)
       m4_instr(R2, 32, B, 01100, 001, 0110000, 00000, CLZ) // single operand instruction are currently using R2-type rather than I-type encoding
       m4_instr(R2, 32, B, 01100, 001, 0110000, 00001, CTZ)
-      m4_instr(R2, 32, B, 01100, 001, 0110000, 00010, PCNT)
+      //m4_instr(R2, 32, B, 01100, 001, 0110000, 00010, PCNT)
       //m4_instr(R2, 64, B, 01100, 001, 0110000, 00011, BMATFLIP)
       //m4_instr(R2, 32, B, 01100, 001, 0110000, 00100, SEXTB)
       //m4_instr(R2, 32, B, 01100, 001, 0110000, 00101, SEXTH)
@@ -2330,7 +2330,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       
       m4+clz_final(|fetch/instr, /clz_stage, 32, 0, 1, $input_a, $clz_final_output)
       m4+ctz_final(|fetch/instr, /ctz_stage, /reverse, 32, 0, 1, $input_a, $ctz_final_output)
-      m4+popcnt(|fetch/instr, /pop_stage, $input_a, $popcnt_output, 32)
+      //m4+popcnt(|fetch/instr, /pop_stage, $input_a, $popcnt_output, 32)
       m4+andn($input_a, $input_b, $andn_output[31:0])
       m4+orn($input_a, $input_b, $orn_output[31:0])
       m4+xnor($input_a, $input_b, $xnor_output[31:0])
@@ -2577,7 +2577,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                                   //$is_fsr_instr      ||
                                   $is_clz_instr      ||
                                   $is_ctz_instr      ||
-                                  $is_pcnt_instr     ||
+                                  //$is_pcnt_instr     ||
                                   //$is_bmatflip_instr ||
                                   //$is_sextb_instr    ||
                                   //$is_sexth_instr    ||
@@ -2672,7 +2672,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          //$fsri_rslt[M4_WORD_RANGE]   = $rvb_shifter_output;
          $clz_rslt[M4_WORD_RANGE]    = {26'b0, $clz_final_output};
          $ctz_rslt[M4_WORD_RANGE]    = {26'b0, $ctz_final_output};
-         $pcnt_rslt[M4_WORD_RANGE]   = {26'b0, $popcnt_output};
+         //$pcnt_rslt[M4_WORD_RANGE]   = {26'b0, $popcnt_output};
          //$bmatflip_rslt[M4_WORD_RANGE] = $_output;
          //$sextb_rslt[M4_WORD_RANGE] = $_output;
          //$sexth_rslt[M4_WORD_RANGE] = $_output;
