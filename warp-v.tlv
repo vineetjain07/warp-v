@@ -603,7 +603,6 @@ m4+definitions(['
          m4_define_vector(['M4_WORD'], 32)
          m4_define_hier(['M4_REGS'], 32, 1)
          m4_define_hier(['M4_FPUREGS'], 32, 0)
-         m4_define_hier(['M4_FPUCSR'], 8, 0)
       '],
       ['MIPSI'], ['
          m4_define_vector_with_fields(M4_INSTR, 32, OPCODE, 26, RS, 21, RT, 16, RD, 11, SHAMT, 6, FUNCT, 0)
@@ -1433,7 +1432,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(FMSUBS, r6, r1, r2, r3, 000)
    m4_asm(FNMSUBS, r7, r1, r2, r3, 000)
    m4_asm(FNMADDS, r8, r1, r2, r3, 000)
-   m4_asm(LW, r4, r6, 0)
    m4_asm(CSRRS, r20, r0, 10)
    m4_asm(CSRRS, r20, r0, 11)
    m4_asm(FADDS, r9, r1, r2, 000)
@@ -1502,11 +1500,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(GREVI, r13, r1, 111)
    m4_asm(CLMUL, r14, r1, r2)
    m4_asm(CLMULR, r15, r1, r2)
-   //m4_asm(CMIX, r14, r1, r2, r3)
-   //m4_asm(CMOV, r15, r1, r2, r3)
-   //m4_asm(FSL, r16, r1, r2, r3)
-   //m4_asm(FSR, r17, r1, r2, r3)
-   //m4_asm(FSRI, r18, r1, r2, r3)
    m4_asm(CLZ, r19, r1)
    m4_asm(CTZ, r20, r1)
    m4_asm(PCNT, r21, r1)
@@ -1872,20 +1865,20 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       //m4_instr(R4, 32, B, 01100, 001, 10, FSL)
       //m4_instr(R4, 32, B, 01100, 101, 10, FSR)
       //m4_instr(R4, 32, B, 00100, 101, 10, FSRI)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 00000, CLZ) // single operand instruction are currently using R2-type rather than I-type encoding
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 00001, CTZ)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 00010, PCNT)
-      //m4_instr(R2, 64, B, 01110, 001, 0110000, 00011, BMATFLIP)
-      //m4_instr(R2, 32, B, 01110, 001, 0110000, 00100, SEXTB)
-      //m4_instr(R2, 32, B, 01110, 001, 0110000, 00101, SEXTH)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 10000, CRC32B)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 10001, CRC32H)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 10010, CRC32W)
-      //m4_instr(R2, 64, B, 01110, 001, 0110000, 10011, CRC32D)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 11000, CRC32CB)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 11001, CRC32CH)
-      m4_instr(R2, 32, B, 01110, 001, 0110000, 11010, CRC32CW)
-      //m4_instr(R2, 64, B, 01110, 001, 0110000, 11011, CRC32CD)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 00000, CLZ) // single operand instruction are currently using R2-type rather than I-type encoding
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 00001, CTZ)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 00010, PCNT)
+      //m4_instr(R2, 64, B, 01100, 001, 0110000, 00011, BMATFLIP)
+      //m4_instr(R2, 32, B, 01100, 001, 0110000, 00100, SEXTB)
+      //m4_instr(R2, 32, B, 01100, 001, 0110000, 00101, SEXTH)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 10000, CRC32B)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 10001, CRC32H)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 10010, CRC32W)
+      //m4_instr(R2, 64, B, 01100, 001, 0110000, 10011, CRC32D)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 11000, CRC32CB)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 11001, CRC32CH)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 11010, CRC32CW)
+      //m4_instr(R2, 64, B, 01100, 001, 0110000, 11011, CRC32CD)
       m4_instr(R, 32, B, 01100, 001, 0000101, CLMUL)
       m4_instr(R, 32, B, 01100, 010, 0000101, CLMULR)
       m4_instr(R, 32, B, 01100, 011, 0000101, CLMULH)
@@ -2292,6 +2285,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       '])
       m4_ifelse_block(M4_EXT_F, 1, ['
       // "F" Extension.
+
       // TODO. Current implementation of FPU is not optimized in terms of encode-decode of instruction inside marco, hence its latency and generated logic increases.
       // Need to call fpu_exe marco inside this ifelse_block itself and simplify it to optimize the unit.
       /* verilator lint_off WIDTH */
@@ -2309,7 +2303,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4+sgn_abs_injn(8, 24, $operand_a, $operand_b, $fsgnjxs_output)
       /* verilator lint_on WIDTH */
       /* verilator lint_on CASEINCOMPLETE */
-      
+
       /orig_inst
          // put correctly aligned values from Verilog modules into /orig_inst scope
          // and RETAIN till next F-type instruction, to be used again at second issue
@@ -2319,9 +2313,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4_ifelse_block(M4_EXT_B, 1, ['
       // "B" Extension.
       // TODO. Current implementation of BMI is not optimized in terms of encode-decode of instruction inside marco, hence its latency and generated logic increases.
+      
       $clmul_valid = >>1$clmul_stall;
       $crc_valid = >>1$crc_stall;
-      //$clmul_crc_type_instr
+
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */
       /* verilator lint_off PINMISSING */
@@ -2368,10 +2363,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       //m4+cmix($input_a, $input_b, $input_c, $cmix_output, 32)
       //m4+cmov($input_a, $input_b, $input_c, $cmov_output, 32)
       //m4+rvb_shifter(1, |fetch/instr, 32, 1, 1, $bmi_clk, $bmi_reset, $din_valid_rvb_shifter, $din_ready_rvb_shifter, $input_a, $input_b, $input_c, $din_insn3, $din_insn13, $din_insn14, $din_insn26, $din_insn27, $din_insn29, $din_insn30, $dout_valid_rvb_shifter, $dout_ready_rvb_shifter, $rvb_shifter_output[31:0])
+      
       /* verilator lint_on WIDTH */
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on PINMISSING */
       /* verilator lint_on CASEOVERLAP */
+
       /orig_inst
          $clmul_crc_late_rslt[M4_WORD_RANGE] = |fetch/instr$clmul_valid ? |fetch/instr$clmul_output : |fetch/instr$crc_valid   ? |fetch/instr$rvb_crc_output   : $RETAIN;
          $clmul_crc_dest_reg[M4_REGS_INDEX_RANGE]   = ((|fetch/instr$clmul_stall || |fetch/instr$crc_stall) && |fetch/instr$commit) ? |fetch/instr$dest_reg : $RETAIN;
@@ -2481,7 +2478,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $remu_rslt[M4_WORD_RANGE]     = M4_WORD_CNT'b0;
          `BOGUS_USE ($wrm $wrd $readyd $readym $waitm $waitd)
          '])
+
          // "F" Extension.
+
          m4_ifelse_block(M4_EXT_F, 1, ['
          // Determining the type of fpu_operation according to the fpu_exe marco
          $fpu_operation[4:0] = ({5{$is_fmadds_instr }}  & 5'h2 ) |
@@ -2511,12 +2510,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          // Needed for division-sqrt module  
          $nreset = ! *reset;
          $clock = *clk;
-         
+
          // Operands
          $operand_a[31:0] = /fpusrc[1]$fpu_reg_value;
          $operand_b[31:0] = /fpusrc[2]$fpu_reg_value;
          $operand_c[31:0] = /fpusrc[3]$fpu_reg_value;
-         
+
          // rounding mode as per the RISC-V specs (synchronizing with HardFloat module)
          $rounding_mode[2:0] = (|fetch/instr$raw_rm == 3'b000) ? 3'b000 :
                               (|fetch/instr$raw_rm == 3'b001) ? 3'b010 :
@@ -2525,7 +2524,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                               (|fetch/instr$raw_rm == 3'b100) ? 3'b001 :
                               (|fetch/instr$raw_rm == 3'b111) ? $csr_fcsr[7:5] : 3'bxxx;
          $int_input[31:0] = /src[1]$reg_value;
-         
+
          // Results
          $fmadds_rslt[M4_WORD_RANGE] = /fpu1$output_result;
          $fmsubs_rslt[M4_WORD_RANGE] = /fpu1$output_result;
@@ -2761,7 +2760,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $unnatural_addr_trap = ($ld_st_word && ($addr[1:0] != 2'b00)) || ($ld_st_half && $addr[0]);
       $ld_st_cond = $ld_st && $valid_exe;
       ?$ld_st_cond
-         $addr[M4_ADDR_RANGE] = m4_ifelse(M4_EXT_F, 1, ['($is_fsw_instr ? /fpusrc[1]$fpu_reg_value : /src[1]$reg_value)'],['/src[1]$reg_value']) + ($ld ? $raw_i_imm : $raw_s_imm);
+         $addr[M4_ADDR_RANGE] = m4_ifelse(M4_EXT_F, 1, ['($is_fsw_instr ? /src[1]$reg_value : /src[1]$reg_value)'],['/src[1]$reg_value']) + ($ld ? $raw_i_imm : $raw_s_imm);
          
          // Hardware assumes natural alignment. Otherwise, trap, and handle in s/w (though no s/w provided).
       $st_cond = $st && $valid_exe;
@@ -3415,8 +3414,8 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4_ifelse(M4_ISA, ['RISCV'], [''], ['m4_errprint(['M-ext supported for RISC-V only.']m4_new_line)'])
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */   
-      m4_sv_include_url(['https:/']['/raw.githubusercontent.com/shivampotdar/warp-v/m_ext/muldiv/picorv32_pcpi_div.sv'])
-      m4_sv_include_url(['https:/']['/raw.githubusercontent.com/shivampotdar/warp-v/m_ext/muldiv/picorv32_pcpi_fast_mul.sv'])
+      m4_sv_include_url(['https:/']['/raw.githubusercontent.com/stevehoover/warp-v/master/muldiv/picorv32_pcpi_div.sv'])
+      m4_sv_include_url(['https:/']['/raw.githubusercontent.com/stevehoover/warp-v/master/muldiv/picorv32_pcpi_fast_mul.sv'])
       /* verilator lint_on WIDTH */
    '])
 
@@ -3436,12 +3435,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    @M4_NEXT_PC_STAGE
       $second_issue_div_mul = >>M4_NON_PIPELINED_BUBBLES$trigger_next_pc_div_mul_second_issue;
    @M4_EXECUTE_STAGE
-      {$div_stall, $mul_stall, $stall_cnt[5:0]} =    $reset ? '0 :
-                                                     $second_issue_div_mul ? '0 :
+      {$div_stall, $mul_stall, $stall_cnt[5:0]} =    $reset ? 7'b0 :
+                                                     $second_issue_div_mul ? 7'b0 :
                                                      ($commit && $div_mul) ? {$divtype_instr, $multype_instr, 6'b1} :
                                                      >>1$div_stall ? {1'b1, 1'b0, >>1$stall_cnt + 6'b1} :
                                                      >>1$mul_stall ? {1'b0, 1'b1, >>1$stall_cnt + 6'b1} :
-                                                     '0;
+                                                     7'b0;
                                                      
       $stall_cnt_upper_mul = ($stall_cnt == M4_MUL_LATENCY);
       $stall_cnt_upper_div = ($stall_cnt == M4_DIV_LATENCY);
@@ -3852,7 +3851,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             ?$second_issue
                // This scope holds the original load for a returning load.
                /orig_inst
-                  $ANY = |fetch/instr$second_issue_ld ? /_cpu|mem/data>>M4_LD_RETURN_ALIGN$ANY : m4_ifelse(M4_EXT_M,1,['|fetch/instr$second_issue_div_mul ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F,1,['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :'])m4_ifelse(M4_EXT_B,1,['|fetch/instr$second_issue_clmul_crc ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) >>1$ANY;
+                  $ANY = |fetch/instr$second_issue_ld ? /_cpu|mem/data>>M4_LD_RETURN_ALIGN$ANY : m4_ifelse(M4_EXT_M,1,['|fetch/instr$second_issue_div_mul ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F,1,['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_B,1,['|fetch/instr$second_issue_clmul_crc ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) >>1$ANY;
                   /src[2:1]
                      $ANY = /_cpu|mem/data/src>>M4_LD_RETURN_ALIGN$ANY;
             
@@ -4767,4 +4766,82 @@ m4+module_def
    '])
 
 \SV
-   endmodule
+   endmodule_squash_terms,
+                1'b1}; // Shift in 1'b1 (fetch-valid).
+            
+            $GoodPathMask[M4_MAX_REDIRECT_BUBBLES+1:0] <=
+               <<1$reset ? m4_eval(M4_MAX_REDIRECT_BUBBLES + 2)'b0 :  // All bad-path (through self) on reset (next mask based on next reset).
+               $next_good_path_mask;
+            
+            m4_ifelse_block(M4_FORMAL, ['1'], ['
+            // Formal verfication must consider trapping instructions. For this, we need to maintain $RvfiGoodPathMask, which is similar to
+            // $GoodPathMask, except that it does not mask out aborted instructions.
+            $next_rvfi_good_path_mask[M4_MAX_REDIRECT_BUBBLES+1:0] =
+               {$RvfiGoodPathMask[M4_MAX_REDIRECT_BUBBLES:0]
+                m4_redirect_shadow_terms,
+                1'b1};
+            $RvfiGoodPathMask[M4_MAX_REDIRECT_BUBBLES+1:0] <=
+               <<1$reset ? m4_eval(M4_MAX_REDIRECT_BUBBLES + 2)'b0 :
+               $next_rvfi_good_path_mask;
+            '])
+            
+            
+            // A returning load clobbers the instruction.
+            // (Could do this with lower latency. Right now it goes through memory pipeline $ANY, and
+            //  it is non-speculative. Both could easily be fixed.)
+            $second_issue_ld = /_cpu|mem/data>>M4_LD_RETURN_ALIGN$valid_ld && 1'b['']M4_INJECT_RETURNING_LD;
+            $second_issue = $second_issue_ld m4_ifelse(M4_EXT_M, 1, ['|| $second_issue_div_mul']) m4_ifelse(M4_EXT_F, 1, ['|| $fpu_second_issue_div_sqrt']) m4_ifelse(M4_EXT_B, 1, ['|| $second_issue_clmul_crc']);
+            // Recirculate returning load or the div_mul_result from /orig_inst scope
+
+            ?$second_issue
+               // This scope holds the original load for a returning load.
+               /orig_inst
+                  $ANY = |fetch/instr$second_issue_ld ? /_cpu|mem/data>>M4_LD_RETURN_ALIGN$ANY : m4_ifelse(M4_EXT_M,1,['|fetch/instr$second_issue_div_mul ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F,1,['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :'])m4_ifelse(M4_EXT_B,1,['|fetch/instr$second_issue_clmul_crc ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) >>1$ANY;
+                  /src[2:1]
+                     $ANY = /_cpu|mem/data/src>>M4_LD_RETURN_ALIGN$ANY;
+            
+            // Next PC
+            $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
+            // Current parsing does not allow concatenated state on left-hand-side, so, first, a non-state expression.
+            {$next_pc[M4_PC_RANGE], $next_no_fetch} =
+               $reset ? {M4_PC_CNT'b0, 1'b0} :
+               // ? : terms for each condition (order does matter)
+               m4_redirect_pc_terms
+                          ({$pc_inc, 1'b0});
+            // Then as state.
+            $Pc[M4_PC_RANGE] <= $next_pc;
+            $NoFetch <= $next_no_fetch;
+         
+         @M4_DECODE_STAGE
+
+            // ======
+            // DECODE
+            // ======
+
+            // Decode of the fetched instruction
+            $valid_decode = $fetch;  // Always decode if we fetch.
+            $valid_decode_branch = $valid_decode && $branch;
+            // A load that will return later.
+            //$split_ld = $spec_ld && 1'b['']M4_INJECT_RETURNING_LD;
+            m4+indirect(M4_isa['_decode'])
+         m4+indirect(['branch_pred_']M4_BRANCH_PRED)
+         
+         @M4_REG_RD_STAGE
+            // Pending value to write to dest reg. Loads (not replaced by returning ld) write pending.
+            $reg_wr_pending = $ld && ! $second_issue && 1'b['']M4_INJECT_RETURNING_LD;
+            `BOGUS_USE($reg_wr_pending)  // Not used if no bypass and no pending.
+            
+            // ======
+            // Reg Rd
+            // ======
+            
+            // Obtain source register values and pending bit for source registers. Bypass up to 3
+            // stages.
+            // It is not necessary to bypass pending, as we could delay the replay, but we implement
+            // bypass for performance.
+            // Pending has an additional read for the dest register as we need to replay for write-after-write
+            // hazard as well as write-after-read. To replay for dest write with the same timing, we must also
+            // bypass the dest reg's pending bit.
+            /M4_REGS_HIER
+            /src[2:1]
+               $is_reg_condition = $is_reg && /instr$valid_decode;  // Note: $is_reg can be set for 
