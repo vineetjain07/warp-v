@@ -1480,24 +1480,24 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(XNOR, r7, r1, r2)
    m4_asm(SLO, r8, r1, r2)
    m4_asm(SRO, r20, r1, r2)
-   //m4_asm(ROL, r20, r1, r2)
-   //m4_asm(ROR, r9, r1, r2)
+   m4_asm(ROL, r20, r1, r2)
+   m4_asm(ROR, r9, r1, r2)
    //m4_asm(LW, r4, r6, 0)
    m4_asm(SBCLR, r10, r1, r2)
    m4_asm(SBSET, r11, r1, r2)
    m4_asm(SBINV, r12, r1, r2)
    m4_asm(SBEXT, r20, r1, r2)
    m4_asm(GORC, r20, r1, r2)
-   m4_asm(GREV, r13, r1, r2)
+   //m4_asm(GREV, r13, r1, r2)
    m4_asm(SLOI, r8, r1, 111)
    m4_asm(SROI, r20, r1, 111)
-   //m4_asm(RORI, r9, r1, 111)
+   m4_asm(RORI, r9, r1, 111)
    m4_asm(SBCLRI, r10, r1, 111)
    m4_asm(SBSETI, r11, r1, 111)
    m4_asm(SBINVI, r12, r1, 111)
    m4_asm(SBEXTI, r20, r1, 111)
    m4_asm(GORCI, r20, r1, 111)
-   m4_asm(GREVI, r13, r1, 111)
+   //m4_asm(GREVI, r13, r1, 111)
    m4_asm(CLMUL, r14, r1, r2)
    m4_asm(CLMULR, r15, r1, r2)
    m4_asm(CLZ, r19, r1)
@@ -1843,23 +1843,23 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4_instr(R, 32, B, 01100, 100, 0100000, XNOR)
       m4_instr(R, 32, B, 01100, 001, 0010000, SLO)
       m4_instr(R, 32, B, 01100, 101, 0010000, SRO)
-      //m4_instr(R, 32, B, 01100, 001, 0110000, ROL)
-      //m4_instr(R, 32, B, 01100, 101, 0110000, ROR)
+      m4_instr(R, 32, B, 01100, 001, 0110000, ROL)
+      m4_instr(R, 32, B, 01100, 101, 0110000, ROR)
       m4_instr(R, 32, B, 01100, 001, 0100100, SBCLR)
       m4_instr(R, 32, B, 01100, 001, 0010100, SBSET)
       m4_instr(R, 32, B, 01100, 001, 0110100, SBINV)
       m4_instr(R, 32, B, 01100, 101, 0100100, SBEXT)
       m4_instr(R, 32, B, 01100, 101, 0010100, GORC)
-      m4_instr(R, 32, B, 01100, 101, 0110100, GREV)
+      //m4_instr(R, 32, B, 01100, 101, 0110100, GREV)
       m4_instr(If, 32, B, 00100, 001, 00100, SLOI)
       m4_instr(If, 32, B, 00100, 101, 00100, SROI)
-      //m4_instr(If, 32, B, 00100, 101, 01100, RORI)
+      m4_instr(If, 32, B, 00100, 101, 01100, RORI)
       m4_instr(If, 32, B, 00100, 001, 01001, SBCLRI)
       m4_instr(If, 32, B, 00100, 001, 00101, SBSETI)
       m4_instr(If, 32, B, 00100, 001, 01101, SBINVI)
       m4_instr(If, 32, B, 00100, 101, 01001, SBEXTI)
       m4_instr(If, 32, B, 00100, 101, 00101, GORCI)
-      m4_instr(If, 32, B, 00100, 101, 01101, GREVI)
+      //m4_instr(If, 32, B, 00100, 101, 01101, GREVI)
       //m4_instr(R4, 32, B, 01100, 001, 11, CMIX)  // Currently we are excluing ternary BMI's for optimization, although its only a draft
       //m4_instr(R4, 32, B, 01100, 101, 11, CMOV)
       //m4_instr(R4, 32, B, 01100, 001, 10, FSL)
@@ -2353,9 +2353,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4+sro($input_a, $input_b, $sro_output, 32)
       m4+sloi($input_a, $input_b, $sloi_output, 32)
       m4+sroi($input_a, $input_b, $sroi_output, 32)
-      //m4+rorl_final(32, 1, $input_a, $sftamt, $rorl_final_output, 31, 0)
-      //m4+rorr_final(32, 1, $input_a, $sftamt, $rorr_final_output, 31, 0)
-      m4+brev_final(|fetch/instr, /brev_stage, 32, 32, 0, 1, $input_a, $sftamt, $grev_final_output)
+      m4+rorl_final(32, 1, $input_a, $sftamt, $rorl_final_output, 31, 0)
+      m4+rorr_final(32, 1, $input_a, $sftamt, $rorr_final_output, 31, 0)
+      //m4+brev_final(|fetch/instr, /brev_stage, 32, 32, 0, 1, $input_a, $sftamt, $grev_final_output)
       m4+bext_dep(1, |fetch/instr, 32, 1, 1, 0, $bmi_clk, $bmi_reset, $din_valid_bext_dep, $din_ready_bext_dep, $input_a, $input_b, $din_insn3, $din_insn13, $din_insn14, $din_insn29, $din_insn30, $dout_valid_bext_dep, $dout_ready_bext_dep, $bext_dep_output[31:0])
       m4+bfp($input_a, $input_b, $bfp_output, 32)
       m4+clmul(1, |fetch/instr, 32, $bmi_clk, $bmi_reset, $din_valid_clmul, $din_ready_clmul, $input_a, $input_b, $din_insn3, $din_insn12, $din_insn13, $dout_valid_clmul, $dout_ready_clmul, $clmul_output[31:0])
@@ -2563,14 +2563,14 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                                   $is_xnor_instr       ||
                                   $is_slo_instr        ||
                                   $is_sro_instr        ||
-                                  //$is_rol_instr        ||
-                                  //$is_ror_instr        ||
+                                  $is_rol_instr        ||
+                                  $is_ror_instr        ||
                                   $is_sbclr_instr      ||
                                   $is_sbset_instr      ||
                                   $is_sbinv_instr      ||
                                   $is_sbext_instr      ||
                                   $is_gorc_instr       ||
-                                  $is_grev_instr       ||
+                                  //$is_grev_instr       ||
                                   //$is_cmix_instr     ||
                                   //$is_cmov_instr     ||
                                   //$is_fsl_instr      ||
@@ -2609,13 +2609,13 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          
          $is_imm_type_instr =     $is_sloi_instr       ||
                                   $is_sroi_instr       ||
-                                  //$is_rori_instr       ||
+                                  $is_rori_instr       ||
                                   $is_sbclri_instr     ||
                                   $is_sbseti_instr     ||
                                   $is_sbinvi_instr     ||
                                   $is_sbexti_instr     ||
                                   $is_gorci_instr      ||
-                                  $is_grevi_instr      ||
+                                  //$is_grevi_instr      ||
                                   //$is_fsri_instr     ||
                                   $is_shfli_instr      ||
                                   $is_unshfli_instr;
@@ -2648,23 +2648,23 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $xnor_rslt[M4_WORD_RANGE]   = $xnor_output;
          $slo_rslt[M4_WORD_RANGE]    = $slo_output;
          $sro_rslt[M4_WORD_RANGE]    = $sro_output;
-         //$rol_rslt[M4_WORD_RANGE]    = $rorl_final_output;
-         //$ror_rslt[M4_WORD_RANGE]    = $rorr_final_output;
+         $rol_rslt[M4_WORD_RANGE]    = $rorl_final_output;
+         $ror_rslt[M4_WORD_RANGE]    = $rorr_final_output;
          $sbclr_rslt[M4_WORD_RANGE]  = $sbclr_output;
          $sbset_rslt[M4_WORD_RANGE]  = $sbset_output;
          $sbinv_rslt[M4_WORD_RANGE]  = $sbinv_output;
          $sbext_rslt[M4_WORD_RANGE]  = $sbext_output;
          $gorc_rslt[M4_WORD_RANGE]   = $bext_dep_output;
-         $grev_rslt[M4_WORD_RANGE]   = $grev_final_output;
+         //$grev_rslt[M4_WORD_RANGE]   = $grev_final_output;
          $sloi_rslt[M4_WORD_RANGE]   = $sloi_output;
          $sroi_rslt[M4_WORD_RANGE]   = $sroi_output;
-         //$rori_rslt[M4_WORD_RANGE]   = $rorr_final_output;
+         $rori_rslt[M4_WORD_RANGE]   = $rorr_final_output;
          $sbclri_rslt[M4_WORD_RANGE] = $sbclri_output;
          $sbseti_rslt[M4_WORD_RANGE] = $sbseti_output;
          $sbinvi_rslt[M4_WORD_RANGE] = $sbinvi_output;
          $sbexti_rslt[M4_WORD_RANGE] = $sbexti_output;
          $gorci_rslt[M4_WORD_RANGE]  = $bext_dep_output;
-         $grevi_rslt[M4_WORD_RANGE]  = $grev_final_output;
+         //$grevi_rslt[M4_WORD_RANGE]  = $grev_final_output;
          //$cmix_rslt[M4_WORD_RANGE]   = $cmix_output;
          //$cmov_rslt[M4_WORD_RANGE]   = $cmov_output;
          //$fsl_rslt[M4_WORD_RANGE]    = $rvb_shifter_output;
