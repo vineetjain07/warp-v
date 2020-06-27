@@ -133,9 +133,9 @@
 // e.g. m4+rorl_final(32, 1, $input, $sftamt, $output, 31, 0)
 \TLV rorl_final(#_varbits,#_stage,$_reg_value,$_sft_amt,$_rotl,#_max,#_min) 
    \always_comb
-   begin
       $['']$_rotl['']#_stage[#_max : #_min] = 0;
       for (int i = #_min; i <= #_max; i++)
+      begin
          $_rotl['']#_stage[i] = ($_sft_amt[#_stage - 1] == 0) ?
               $_reg_value[i] : (i >= 0 && i < (2**(#_stage - 1))) ?
               $_reg_value[(i+((#_max + 1) - (2**(#_stage - 1))))] :
