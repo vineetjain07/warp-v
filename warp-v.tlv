@@ -2655,7 +2655,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $sbinv_rslt[M4_WORD_RANGE]  = $sbinv_output;
          $sbext_rslt[M4_WORD_RANGE]  = $sbext_output;
          $gorc_rslt[M4_WORD_RANGE]   = $bext_dep_output;
-         //$grev_rslt[M4_WORD_RANGE]   = $grev_final_output;
+         $grev_rslt[M4_WORD_RANGE]   = $grev_final_output;
          $sloi_rslt[M4_WORD_RANGE]   = $sloi_output;
          $sroi_rslt[M4_WORD_RANGE]   = $sroi_output;
          $rori_rslt[M4_WORD_RANGE]   = $rorr_final_output;
