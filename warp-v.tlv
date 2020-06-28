@@ -1502,7 +1502,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    m4_asm(CLMULR, r15, r1, r2)
    m4_asm(CLZ, r19, r1)
    m4_asm(CTZ, r20, r1)
-   //m4_asm(PCNT, r21, r1)
+   m4_asm(PCNT, r21, r1)
    m4_asm(CRC32B, r22, r1)
    m4_asm(CRC32H, r23, r1)
    m4_asm(CRC32W, r24, r1)
@@ -1867,10 +1867,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       //m4_instr(R4, 32, B, 00100, 101, 10, FSRI)
       m4_instr(R2, 32, B, 01100, 001, 0110000, 00000, CLZ) // single operand instruction are currently using R2-type rather than I-type encoding
       m4_instr(R2, 32, B, 01100, 001, 0110000, 00001, CTZ)
-      //m4_instr(R2, 32, B, 01100, 001, 0110000, 00010, PCNT)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 00010, PCNT)
       //m4_instr(R2, 64, B, 01100, 001, 0110000, 00011, BMATFLIP)
-      //m4_instr(R2, 32, B, 01100, 001, 0110000, 00100, SEXTB)
-      //m4_instr(R2, 32, B, 01100, 001, 0110000, 00101, SEXTH)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 00100, SEXTB)
+      m4_instr(R2, 32, B, 01100, 001, 0110000, 00101, SEXTH)
       m4_instr(R2, 32, B, 01100, 001, 0110000, 10000, CRC32B)
       m4_instr(R2, 32, B, 01100, 001, 0110000, 10001, CRC32H)
       m4_instr(R2, 32, B, 01100, 001, 0110000, 10010, CRC32W)
@@ -2329,6 +2329,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       $din_valid_rvb_crc = ($is_crc32b_instr || $is_crc32h_instr || $is_crc32w_instr || $is_crc32cb_instr || $is_crc32ch_instr || $is_crc32cw_instr) && |fetch/instr$commit;
       //$din_valid_rvb_shifter = ($is_fsl_instr || $is_fsr_instr || $is_fsri_instr) && |fetch/instr$commit;
       $din_valid_rvb_shifter = ($is_ror_instr || $is_rori_instr || $is_rol_instr) && |fetch/instr$commit;
+      $din_valid_rvb_bitcnt = ($is_pcnt_instr || $is_sextb_instr || $is_sexth_instr) && |fetch/instr$commit;
       
       m4+clz_final(|fetch/instr, /clz_stage, 32, 0, 1, $input_a, $clz_final_output)
       m4+ctz_final(|fetch/instr, /ctz_stage, /reverse, 32, 0, 1, $input_a, $ctz_final_output)
@@ -2365,7 +2366,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       //m4+cmix($input_a, $input_b, $input_c, $cmix_output, 32)
       //m4+cmov($input_a, $input_b, $input_c, $cmov_output, 32)
       m4+rvb_shifter(1, |fetch/instr, 32, 1, 1, $bmi_clk, $bmi_reset, $din_valid_rvb_shifter, $din_ready_rvb_shifter, $input_a, $input_b, $input_c, $din_insn3, $din_insn13, $din_insn14, $din_insn26, $din_insn27, $din_insn29, $din_insn30, $dout_valid_rvb_shifter, $dout_ready_rvb_shifter, $rvb_shifter_output[31:0])
-      
+      m4+rvb_bitcnt(1, |fetch/instr, 32, 0, $bmi_clk, $bmi_reset, $din_valid_rvb_bitcnt, $din_ready_rvb_bitcnt, $input_a, $din_insn3, $din_insn20, $din_insn21, $din_insn22, $dout_valid_rvb_bitcnt, $dout_ready_rvb_bitcnt, $rvb_bitcnt_output[31:0])
       /* verilator lint_on WIDTH */
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on PINMISSING */
@@ -2374,7 +2375,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       /orig_inst
          $clmul_crc_late_rslt[M4_WORD_RANGE] = |fetch/instr$clmul_valid ? |fetch/instr$clmul_output : |fetch/instr$crc_valid   ? |fetch/instr$rvb_crc_output   : $RETAIN;
          $clmul_crc_dest_reg[M4_REGS_INDEX_RANGE]   = ((|fetch/instr$clmul_stall || |fetch/instr$crc_stall) && |fetch/instr$commit) ? |fetch/instr$dest_reg : $RETAIN;
-      `BOGUS_USE($din_ready_rvb_shifter $din_ready_bext_dep $din_ready_rvb_crc $din_ready_clmul)
+      `BOGUS_USE($din_ready_rvb_bitcnt $din_ready_rvb_shifter $din_ready_bext_dep $din_ready_rvb_crc $din_ready_clmul)
       '])
 
       // Compute results for each instruction, independent of decode (power-hungry, but fast).
@@ -2579,10 +2580,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                                   //$is_fsr_instr      ||
                                   $is_clz_instr      ||
                                   $is_ctz_instr      ||
-                                  //$is_pcnt_instr     ||
+                                  $is_pcnt_instr     ||
                                   //$is_bmatflip_instr ||
-                                  //$is_sextb_instr    ||
-                                  //$is_sexth_instr    ||
+                                  $is_sextb_instr    ||
+                                  $is_sexth_instr    ||
                                   $is_crc32b_instr   ||
                                   $is_crc32h_instr   ||
                                   $is_crc32w_instr   ||
@@ -2637,12 +2638,13 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $din_insn14  = |fetch/instr$raw[14];
          $din_insn20  = |fetch/instr$raw[20];
          $din_insn21  = |fetch/instr$raw[21];
+         $din_insn22  = |fetch/instr$raw[22];
          $din_insn23  = |fetch/instr$raw[23];
          $din_insn26  = |fetch/instr$raw[26];
          $din_insn27  = |fetch/instr$raw[27];
          $din_insn29  = |fetch/instr$raw[29];
          $din_insn30  = |fetch/instr$raw[30];
-         `BOGUS_USE($is_imm_type_instr $sftamt $din_insn26 $din_insn27)
+         `BOGUS_USE($is_imm_type_instr $sftamt $din_insn22 $din_insn26 $din_insn27)
 
          // Results
          $andn_rslt[M4_WORD_RANGE]   = $andn_output;
@@ -2680,8 +2682,11 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $clz_rslt[M4_WORD_RANGE]    = {26'b0, $clz_final_output};
          $ctz_rslt[M4_WORD_RANGE]    = {26'b0, $ctz_final_output};
          //$pcnt_rslt[M4_WORD_RANGE]   = {26'b0, $popcnt_output};
+         $pcnt_rslt[M4_WORD_RANGE]   = $rvb_bitcnt_output;
          //$bmatflip_rslt[M4_WORD_RANGE] = $_output;
+         $sextb_rslt[M4_WORD_RANGE]   = $rvb_bitcnt_output;
          //$sextb_rslt[M4_WORD_RANGE] = $_output;
+         $sexth_rslt[M4_WORD_RANGE]   = $rvb_bitcnt_output;
          //$sexth_rslt[M4_WORD_RANGE] = $_output;
          //$crc32d_rslt[M4_WORD_RANGE] = $rvb_crc_output;
          //$crc32cd_rslt[M4_WORD_RANGE] = $rvb_crc_output;
@@ -2754,6 +2759,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $dout_ready_clmul = $dout_valid_clmul && |fetch/instr$commit;
          $dout_ready_rvb_crc = $dout_valid_rvb_crc && |fetch/instr$commit;
          $dout_ready_rvb_shifter = $dout_valid_rvb_shifter && |fetch/instr$commit;
+         $dout_ready_rvb_bitcnt = $dout_valid_rvb_bitcnt && |fetch/instr$commit;
          '])
 
    // CSR logic
