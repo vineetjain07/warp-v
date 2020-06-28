@@ -244,6 +244,15 @@
       rvb_shifter#(#_xlen,#_sop,#_bfp)
       rvb_shifter#_number($_clk, $_reset, /_top$_din_valid, $['']$_din_ready, /_top$_din_rs1[#_xlen - 1 : 0], /_top$_din_rs2[#_xlen - 1 : 0], /_top$_din_rs3[#_xlen - 1 : 0], /_top$_din_insn3, /_top$_din_insn13, /_top$_din_insn14, /_top$_din_insn26, /_top$_din_insn27, /_top$_din_insn29, /_top$_din_insn30, $['']$_dout_valid, /_top$_dout_ready, $['']$_dout_rd);
 
+// 36) Population Count
+// This marco is inheritated from RISC-V bitmanip draft verilog module.
+// This module contains clz, ctz, pcnt, bmatflip, sext.b and sext.h instruction.
+\TLV rvb_bitcnt(#_number, /_top, #_xlen, #_sop, #_bfp, $_clk, $_reset, $_din_valid, $_din_ready, $_din_rs1, $_din_insn3, $_din_insn20, $_din_insn21, $_din_insn22, $_dout_valid, $_dout_ready, $_dout_rd)
+   \SV_plus
+      rvb_bitcnt#(#_xlen,#_sop,#_bfp)
+      rvb_bitcnt#_number($_clk, $_reset, /_top$_din_valid, $['']$_din_ready, /_top$_din_rs1[#_xlen - 1 : 0], /_top$_din_insn3, /_top$_din_insn20, /_top$_din_insn21, /_top$_din_insn22, $['']$_dout_valid, /_top$_dout_ready, $['']$_dout_rd);
+
+
 \SV
 // Include verilog and tlv files.
 /* verilator lint_off CMPCONST */
@@ -254,5 +263,6 @@ m4_sv_include_url(['https://raw.githubusercontent.com/riscv/riscv-bitmanip/maste
 m4_sv_include_url(['https://raw.githubusercontent.com/riscv/riscv-bitmanip/master/verilog/rvb_shifter/rvb_shifter.v'])
 m4_sv_include_url(['https://raw.githubusercontent.com/riscv/riscv-bitmanip/master/verilog/rvb_clmul/rvb_clmul.v'])
 m4_sv_include_url(['https://raw.githubusercontent.com/riscv/riscv-bitmanip/master/verilog/rvb_crc/rvb_crc.v'])
+m4_sv_include_url(['https://raw.githubusercontent.com/vineetjain07/riscv-bitmanip/master/verilog/rvb_bitcnt/rvb_bitcnt.v'])
 /* verilator lint_on CMPCONST */   
 /* verilator lint_off WIDTH */   
