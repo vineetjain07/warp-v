@@ -247,9 +247,9 @@
 // 36) Population Count
 // This marco is inheritated from RISC-V bitmanip draft verilog module.
 // This module contains clz, ctz, pcnt, bmatflip, sext.b and sext.h instruction.
-\TLV rvb_bitcnt(#_number, /_top, #_xlen, #_sop, #_bfp, $_clk, $_reset, $_din_valid, $_din_ready, $_din_rs1, $_din_insn3, $_din_insn20, $_din_insn21, $_din_insn22, $_dout_valid, $_dout_ready, $_dout_rd)
+\TLV rvb_bitcnt(#_number, /_top, #_xlen, #_bmat, $_clk, $_reset, $_din_valid, $_din_ready, $_din_rs1, $_din_insn3, $_din_insn20, $_din_insn21, $_din_insn22, $_dout_valid, $_dout_ready, $_dout_rd)
    \SV_plus
-      rvb_bitcnt#(#_xlen,#_sop,#_bfp)
+      rvb_bitcnt#(#_xlen,#_bmat)
       rvb_bitcnt#_number($_clk, $_reset, /_top$_din_valid, $['']$_din_ready, /_top$_din_rs1[#_xlen - 1 : 0], /_top$_din_insn3, /_top$_din_insn20, /_top$_din_insn21, /_top$_din_insn22, $['']$_dout_valid, /_top$_dout_ready, $['']$_dout_rd);
 
 
