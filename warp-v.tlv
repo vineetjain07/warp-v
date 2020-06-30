@@ -3448,12 +3448,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    @M4_NEXT_PC_STAGE
       $second_issue_div_mul = >>M4_NON_PIPELINED_BUBBLES$trigger_next_pc_div_mul_second_issue;
    @M4_EXECUTE_STAGE
-      {$div_stall, $mul_stall, $stall_cnt[5:0]} =    $reset ? 7'b0 :
-                                                     $second_issue_div_mul ? 7'b0 :
+      {$div_stall, $mul_stall, $stall_cnt[5:0]} =    $reset ? '0 :
+                                                     $second_issue_div_mul ? '0 :
                                                      ($commit && $div_mul) ? {$divtype_instr, $multype_instr, 6'b1} :
                                                      >>1$div_stall ? {1'b1, 1'b0, >>1$stall_cnt + 6'b1} :
                                                      >>1$mul_stall ? {1'b0, 1'b1, >>1$stall_cnt + 6'b1} :
-                                                     7'b0;
+                                                     '0;
                                                      
       $stall_cnt_upper_mul = ($stall_cnt == M4_MUL_LATENCY);
       $stall_cnt_upper_div = ($stall_cnt == M4_DIV_LATENCY);
@@ -4662,10 +4662,10 @@ m4+module_def
                      let pending = '$pending'.asBool(false);
                      let reg = parseInt(this.getIndex());
                      let regIdent = ("M4_ISA" == "MINI") ? String.fromCharCode("a".charCodeAt(0) + reg) : reg.toString();
-                     let oldValStr = mod ? `(${'$value'.asInt(NaN).toString(16)})` : "";
+                     let oldValStr = mod ? `(${'$value'.asInt(NaN).toString()})` : "";
                      this.getInitObject("reg").setText(
                         regIdent + ": " +
-                        '$value'.step(1).asInt(NaN).toString(16) + oldValStr);
+                        '$value'.step(1).asInt(NaN).toString() + oldValStr);
                      this.getInitObject("reg").setFill(pending ? "red" : mod ? "blue" : "black");
                   }
             m4_ifelse_block(M4_EXT_F, 1, ['
@@ -4752,7 +4752,7 @@ m4+module_def
 
 
 \TLV //disabled_main()
-   /* verilator lint_off WIDTH */  // Let's be strict about bit widths.
+   /* verilator lint_on WIDTH */  // Let's be strict about bit widths.
    m4_ifelse_block(m4_eval(M4_CORE_CNT > 1), ['1'], ['
    // Multi-core
    /M4_CORE_HIER
