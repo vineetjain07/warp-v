@@ -3629,7 +3629,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             $rvfi_order[63:0] = $reset                  ? 64'b0 :
                                 ($commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
                                                           $RETAIN;
-            $would_reissue = (!$ld) || (!$div_mul);
+            $would_reissue = (!$ld) && (!$div_mul);
             //$would_reissue = ! $ld || ! $non_pipelined;
             $retire = ($commit && $would_reissue ) || $second_issue;
             $rvfi_valid       = ! <<m4_eval(M4_REG_WR_STAGE - (M4_NEXT_PC_STAGE - 1))$reset &&    // Avoid asserting before $reset propagates to this stage.
