@@ -1949,15 +1949,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       
       m4_ifelse_block(M4_EXT_M, 1, ['
       // Instruction requires integer mul/div unit and is long-latency.
-      $divtype_instr = $is_div_instr ||
-                       $is_divu_instr ||
-                       $is_rem_instr ||
-                       $is_remu_instr;
-      $multype_instr = $is_mul_instr ||
-                       $is_mulh_instr ||
-                       $is_mulhsu_instr ||
-                       $is_mulhu_instr;
-      $div_mul       = $multype_instr || $divtype_instr;
+      $divtype_instr = ($is_div_instr || $is_divu_instr || $is_rem_instr || $is_remu_instr) && !>>1$second_issue_div_mul;
+      $multype_instr = ($is_mul_instr || $is_mulh_instr || $is_mulhsu_instr || $is_mulhu_instr) && !>>1$second_issue_div_mul;
+      $div_mul       = ($multype_instr || $divtype_instr);
       '], ['
       $div_mul = 1'b0;
       $multype_instr = 1'b0;
