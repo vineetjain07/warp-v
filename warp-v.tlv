@@ -3390,11 +3390,16 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             // Next PC
             $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
             // Current parsing does not allow concatenated state on left-hand-side, so, first, a non-state expression.
-            {$next_pc[M4_PC_RANGE], $next_no_fetch} =
-               $reset ? {M4_PC_CNT'b0, 1'b0} :
-               // ? : terms for each condition (order does matter)
-               m4_redirect_pc_terms
-                          ({$pc_inc, 1'b0});
+            //{$next_pc[M4_PC_RANGE], $next_no_fetch} =
+            //   $reset ? {M4_PC_CNT'b0, 1'b0} :
+            //   // ? : terms for each condition (order does matter)
+            //   m4_redirect_pc_terms
+            //              ({$pc_inc, 1'b0});
+            {$next_pc[31:2], $next_no_fetch} =
+                     $reset ? {30'b0, 1'b0} :
+                     // ? : terms for each condition (order does matter)
+                     (>>3$non_aborting_trap && !(1'b0 || >>3$second_issue || >>3$NoFetch || >>3$replay || >>3$aborting_trap) && $GoodPathMask[3]) ? {>>3$trap_target, 1'b0} : (>>3$aborting_trap && !(1'b0 || >>3$second_issue || >>3$NoFetch || >>3$replay) && $GoodPathMask[3]) ? {>>3$trap_target,1'b0} : (>>3$non_pipelined && !(1'b0 || >>3$second_issue || >>3$NoFetch || >>3$replay) && $GoodPathMask[3]) ? {>>3$Pc,1'b1} : (>>2$indirect_jump && !(1'b0 || >>2$second_issue || >>2$NoFetch || >>2$replay) && $GoodPathMask[2]) ? {>>2$indirect_jump_target,1'b0} : (>>2$mispred_branch && !(1'b0 || >>2$second_issue || >>2$NoFetch || >>2$replay) && $GoodPathMask[2]) ? {>>2$branch_redir_pc,1'b0} : (>>2$jump && !(1'b0 || >>2$second_issue || >>2$NoFetch || >>2$replay) && $GoodPathMask[2]) ? {>>2$jump_target,1'b0} : (>>2$replay && !(1'b0 || >>2$second_issue || >>2$NoFetch) && $GoodPathMask[2]) ? {>>2$Pc,1'b0} : (>>1$pred_taken_branch && !(1'b0 || >>1$second_issue || >>1$NoFetch) && $GoodPathMask[1]) ? {>>1$branch_target,1'b0} : (>>0$NoFetch && !(1'b0 || >>0$second_issue) && $GoodPathMask[0]) ? {>>0$Pc,1'b1} : (>>0$second_issue && !(1'b0) && $GoodPathMask[0]) ? {>>0$second_issue ? $Pc : $pc_inc,1'b0} :           
+                                ({$pc_inc, 1'b0});
             // Then as state.
             $Pc[M4_PC_RANGE] <= $next_pc;
             $NoFetch <= $next_no_fetch;
