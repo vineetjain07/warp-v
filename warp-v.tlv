@@ -1949,8 +1949,8 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       
       m4_ifelse_block(M4_EXT_M, 1, ['
       // Instruction requires integer mul/div unit and is long-latency.
-      $divtype_instr = ($is_div_instr || $is_divu_instr || $is_rem_instr || $is_remu_instr) && !>>1$second_issue_div_mul;
-      $multype_instr = ($is_mul_instr || $is_mulh_instr || $is_mulhsu_instr || $is_mulhu_instr) && !>>1$second_issue_div_mul;
+      $divtype_instr = ($is_div_instr || $is_divu_instr || $is_rem_instr || $is_remu_instr);
+      $multype_instr = ($is_mul_instr || $is_mulh_instr || $is_mulhsu_instr || $is_mulhu_instr);
       $div_mul       = ($multype_instr || $divtype_instr);
       '], ['
       $div_mul = 1'b0;
@@ -3630,9 +3630,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             $rvfi_order[63:0] = $reset                  ? 64'b0 :
                                 ($commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
                                                           $RETAIN;
-            $would_reissue = (!$ld) && (!$div_mul);
+            $would_reissue = ($ld) || ($div_mul);
             //$would_reissue = ! $ld || ! $non_pipelined;
-            $retire = ($commit && $would_reissue ) || $second_issue;
+            $retire = ($commit && !$would_reissue ) || $second_issue;
             $rvfi_valid       = ! <<m4_eval(M4_REG_WR_STAGE - (M4_NEXT_PC_STAGE - 1))$reset &&    // Avoid asserting before $reset propagates to this stage.
                                 ($retire || $rvfi_trap );
             *rvfi_valid       = $rvfi_valid;
