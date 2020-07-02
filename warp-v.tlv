@@ -3667,9 +3667,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                                  $indirect_jump  ? $indirect_jump_target :
                                  $pc[31:2] +1'b1, 2'b00};
             *rvfi_mem_addr    = (/original$ld || $valid_st) ? {/original$addr[M4_ADDR_MAX:2], 2'b0} : 0;
-            *rvfi_mem_rmask   = /original$ld ? /orig_inst$ld_mask : 0;
+            *rvfi_mem_rmask   = /original$ld ? /orig_load_inst$ld_mask : 0;
             *rvfi_mem_wmask   = $valid_st ? $st_mask : 0;
-            *rvfi_mem_rdata   = /original$ld ? /orig_inst$ld_value : 0;
+            *rvfi_mem_rdata   = /original$ld ? /orig_load_inst$ld_value : 0;
             *rvfi_mem_wdata   = $valid_st ? $st_value : 0;
 
             `BOGUS_USE(/src[2]$dummy)
