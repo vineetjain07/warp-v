@@ -1914,8 +1914,8 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 \TLV riscv_rslt_mux_expr()
    $rslt[M4_WORD_RANGE] =
        $second_issue_ld ? /orig_load_inst$late_rslt :
-       |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div ? |fetch/instr$divblock_rslt : 
-       |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul ? |fetch/instr$mulblock_rslt :
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr$divblock_rslt : 
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul) ? |fetch/instr$mulblock_rslt :
                                                                     M4_WORD_CNT'b0['']m4_echo(m4_rslt_mux_expr);
 
 \TLV riscv_decode()
@@ -2093,21 +2093,22 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4+warpv_div(|fetch/instr,/div1, $divblock_rslt, $wrd, $waitd, $readyd, $clk, $resetn, $div_in1, $div_in2, $instr_type_div, $divblk_valid)
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on WIDTH */
-      /hold_inst
-         //$second_issue = |fetch/instr$second_issue;
-         //?$second_issue
-         // put correctly aligned result for MUL and DIV Verilog modules into /orig_inst scope, 
-         // valid only when we have a second issue (no bogus values propagated)
-            //$divmul_late_rslt[M4_WORD_RANGE] = |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div ? |fetch/instr$divblock_rslt : |fetch/instr$mulblock_rslt;
-            // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
-            // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
-         // put correctly aligned destination register for MUL and DIV Verilog modules into /orig_inst scope
-         // and RETAIN till next M-type instruction, to be used again at second issue
-         $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
-         /src[2:1]
-            $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
-         //$divmul_dest_reg[M4_REGS_INDEX_RANGE]   = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$dest_reg : $RETAIN;
-      '])
+      ?$second_issue_div_mul
+         /hold_inst
+            //$second_issue = |fetch/instr$second_issue;
+            //?$second_issue
+            // put correctly aligned result for MUL and DIV Verilog modules into /orig_inst scope, 
+            // valid only when we have a second issue (no bogus values propagated)
+               //$divmul_late_rslt[M4_WORD_RANGE] = |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div ? |fetch/instr$divblock_rslt : |fetch/instr$mulblock_rslt;
+               // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
+               // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
+            // put correctly aligned destination register for MUL and DIV Verilog modules into /orig_inst scope
+            // and RETAIN till next M-type instruction, to be used again at second issue
+            $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
+            /src[2:1]
+               $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
+            //$divmul_dest_reg[M4_REGS_INDEX_RANGE]   = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$dest_reg : $RETAIN;
+         '])
       m4_ifelse_block(M4_EXT_F, 1, ['
       // "F" Extension.
 
@@ -2343,7 +2344,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
               $ld_st_half ? ($addr[1] ? 4'hc : 4'h3) : // half
                             (4'h1 << $addr[1:0]);      // byte
       // Swizzle bytes for load result (assuming natural alignment).
-      ?$second_issue
+      ?$second_issue_ld
          /orig_load_inst
             $spec_ld_cond = $spec_ld;
             ?$spec_ld_cond
@@ -3641,7 +3642,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             //$would_reissue = ! $ld || ! $non_pipelined;
             $retire = (|fetch/instr$commit && !$would_reissue ) || |fetch/instr$second_issue;
             $rvfi_valid       = ! |fetch/instr<<m4_eval(M4_REG_WR_STAGE - (M4_NEXT_PC_STAGE - 1))$reset &&    // Avoid asserting before $reset propagates to this stage.
-                                ($retire || $rvfi_trap );
+                                ($retire && !$rvfi_trap );
             *rvfi_valid       = $rvfi_valid;
             *rvfi_halt        = $rvfi_trap;
             *rvfi_trap        = $rvfi_trap;
