@@ -1914,7 +1914,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 \TLV riscv_rslt_mux_expr()
    $rslt[M4_WORD_RANGE] =
        $second_issue_ld ? /orig_load_inst$late_rslt :
-       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr$divblock_rslt : 
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr>>m4_eval(M4_NON_PIPELINED_BUBBLES - 1)$divblock_rslt : 
        ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul) ? |fetch/instr>>m4_eval(3+M4_NON_PIPELINED_BUBBLES)$mulblock_rslt :
                                                                     M4_WORD_CNT'b0['']m4_echo(m4_rslt_mux_expr);
 
@@ -2222,8 +2222,8 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          // for Verilog modules instantiation
          $clk = *clk;
          $resetn = !(*reset);
-         $instr_type_mul[3:0] = $mulblk_valid ? {$is_mulhu_instr,$is_mulhsu_instr,$is_mulh_instr,$is_mul_instr} : $RETAIN;
-         $instr_type_div[3:0] = {$is_remu_instr,$is_rem_instr,$is_divu_instr,$is_div_instr};
+         $instr_type_mul[3:0] = $reset ? '0 : $mulblk_valid ? {$is_mulhu_instr,$is_mulhsu_instr,$is_mulh_instr,$is_mul_instr} : $RETAIN;
+         $instr_type_div[3:0] = $reset ? '0 : (|fetch/instr$div_stall && |fetch/instr$commit) ? {$is_remu_instr,$is_rem_instr,$is_divu_instr,$is_div_instr} : $RETAIN;
          $mul_in1[M4_WORD_RANGE] = $reset ? '0 : $mulblk_valid ? /src[1]$reg_value : $RETAIN;
          $mul_in2[M4_WORD_RANGE] = $reset ? '0 : $mulblk_valid ? /src[2]$reg_value : $RETAIN;
          $div_in1[M4_WORD_RANGE] = $reset ? '0 : ($div_stall && $commit) ? /src[1]$reg_value : $RETAIN;
@@ -2999,7 +2999,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 
    // This macro handles the stalling logic using a counter, and triggers second issue accordingly.
 
-   m4_define(['M4_DIV_LATENCY'], 37)  // Relative to typical 1-cycle latency instructions.
+   m4_define(['M4_DIV_LATENCY'], 12)  // Relative to typical 1-cycle latency instructions.
    m4_define(['M4_MUL_LATENCY'], 5)
    @M4_NEXT_PC_STAGE
       $second_issue_div_mul = >>M4_NON_PIPELINED_BUBBLES$trigger_next_pc_div_mul_second_issue;
@@ -3712,14 +3712,15 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             // Header
             // Construct header flit.
             $src[M4_CORE_INDEX_RANGE] = #m4_strip_prefix(/_cpu);
-            $header_flit[31:0] = {{M4_FLIT_UNUSED_CNT{1'b0}},
-                                  $src,
-                                  $vc,
-                                  $csr_pktdest[m4_echo(M4_CORE_INDEX_RANGE)]
-                                 };
-         /flit
-            {$tail, $flit[M4_WORD_RANGE]} = |egress_in/instr$insert_header ? {1'b0, |egress_in/skid_buffer$header_flit} :
-                                                                             {|egress_in/skid_buffer$is_csr_pkttail, |egress_in/skid_buffer$csr_wr_value};
+            $header_flit[31:0] = {{M4_F4ANY;
+            
+            // Next PC
+            $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
+            // Current parsing does not allow concatenated state on left-hand-side, so, first, a non-state expression.
+            {$next_pc[M4_PC_RANGE], $next_no_fetch} =
+               $reset ? {M4_PC_CNT'b0, 1'b0} :
+               // ? : terms for each condition (order does matter)
+                                           {|egress_in/skid_buffer$is_csr_pkttail, |egress_in/skid_buffer$csr_wr_value};
    /vc[*]
       |egress_in
          @1
