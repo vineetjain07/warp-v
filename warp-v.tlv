@@ -289,7 +289,7 @@ m4+definitions(['
    // Include testbench (for Makerchip simulation) (defaulted to 1).
    m4_default(['M4_IMPL'], 0)  // For implementation (vs. simulation).
    // Build for formal verification (defaulted to 0).
-   m4_default(['M4_FORMAL'], 0)  // 1 to enable code for formal verification
+   m4_default(['M4_FORMAL'], 1)  // 1 to enable code for formal verification
 
    // A hook for a software-controlled reset. None by default.
    m4_define(['m4_soft_reset'], 1'b0)
@@ -3390,9 +3390,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                      
                /orig_inst
                   //$ANY = |fetch/instr$second_issue_ld ? /_cpu|mem/data>>M4_LD_RETURN_ALIGN$ANY : m4_ifelse(M4_EXT_M,1,['|fetch/instr$second_issue_div_mul ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F,1,['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) >>1$ANY;
-                  $ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY;
+                  $ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr$second_issue_div_mul ? /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY : $ANY;
                   /src[2:1]
-                     $ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY;
+                     $ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr$second_issue_div_mul ? /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY : $ANY;
             
             // Next PC
             $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
@@ -3405,6 +3405,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             // Then as state.
             $Pc[M4_PC_RANGE] <= $next_pc;
             $NoFetch <= $next_no_fetch;
+            $pc[M4_PC_RANGE] = |fetch/instr$Pc[M4_PC_RANGE];
          
          @M4_DECODE_STAGE
 
@@ -3620,8 +3621,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    |fetch
       /instr
          @M4_REG_WR_STAGE
-            
-            $pc[M4_PC_RANGE] = $Pc[M4_PC_RANGE];  // A version of PC we can pull through $ANYs.
+            //$pc[M4_PC_RANGE] = |fetch/instr$Pc[M4_PC_RANGE];  // A version of PC we can pull through $ANYs.
             // This scope is a copy of /instr or /instr/orig_inst if $second_issue.
             /original
                $ANY = /instr$second_issue ? /instr/orig_inst$ANY : /instr$ANY;
@@ -3629,6 +3629,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                   $ANY = /instr$second_issue ? /instr/orig_inst/src$ANY : /instr/src$ANY;
 
             // RVFI interface for formal verification.
+         @M4_EXECUTE_STAGE   
             $trap = $aborting_trap ||
                     $non_aborting_trap;
             $rvfi_trap        = ! $reset && >>m4_eval(-M4_MAX_REDIRECT_BUBBLES + 1)$next_rvfi_good_path_mask[M4_MAX_REDIRECT_BUBBLES] &&
@@ -3637,6 +3638,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             $rvfi_order[63:0] = $reset                  ? 64'b0 :
                                 ($commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
                                                           $RETAIN;
+         @M4_REG_WR_STAGE   
             $would_reissue = ($ld) || ($div_mul);
             //$would_reissue = ! $ld || ! $non_pipelined;
             $retire = ($commit && !$would_reissue ) || $second_issue;
@@ -3659,7 +3661,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                *rvfi_rd_wdata    = (| *rvfi_rd_addr) ? /instr$rslt : 32'b0;
             *rvfi_pc_rdata    = {/original$pc[31:2], 2'b00};
             *rvfi_pc_wdata    = {$reset          ? M4_PC_CNT'b0 :
-                                 $second_issue   ? /hold_inst$pc + 1'b1 :
+                                 $second_issue   ? /orig_inst$pc + 1'b1 :
                                  $trap           ? $trap_target :
                                  $jump           ? $jump_target :
                                  $mispred_branch ? ($taken ? $branch_target[M4_PC_RANGE] : $pc + M4_PC_CNT'b1) :
