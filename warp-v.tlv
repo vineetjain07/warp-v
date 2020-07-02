@@ -27,7 +27,7 @@
    // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    // -----------------------------------------------------------------------------
    // This code is mastered in https://github.com/stevehoover/warp-v.git
-
+`define RISCV_FORMAL_ALTOPS
 m4+definitions(['
 
    // A highly-parameterized CPU generator, configurable for:
@@ -2089,7 +2089,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       $mulblk_valid = $multype_instr && $commit;
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */   
-      m4_define(['RISCV_FORMAL_ALTOPS'],['1'])
+      //m4_define(['RISCV_FORMAL_ALTOPS'],['1'])
       m4+warpv_mul(|fetch/instr,/mul1, $mulblock_rslt, $wrm, $waitm, $readym, $clk, $resetn, $mul_in1, $mul_in2, $instr_type_mul, $mulblk_valid)
       m4+warpv_div(|fetch/instr,/div1, $divblock_rslt, $wrd, $waitd, $readyd, $clk, $resetn, $div_in1, $div_in2, $instr_type_div, $divblk_valid)
       /* verilator lint_on CASEINCOMPLETE */
