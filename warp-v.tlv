@@ -3025,7 +3025,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                      (/_top$_instr_type == 4'b0010) ? 3'b001 : // mulh
                      (/_top$_instr_type == 4'b0100) ? 3'b010 : // mulhsu
                      (/_top$_instr_type == 4'b1000) ? 3'b011 : // mulhu
-                                                      3'b000 ; // default to mul, but this case 
+                                                      >>1$opcode[2:0] ; // default to mul, but this case 
                                                                // should not be encountered ideally
 
       $mul_insn[31:0] = {7'b0000001,10'b0011000101,$opcode,5'b00101,7'b0110011};
