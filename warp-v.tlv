@@ -289,7 +289,7 @@ m4+definitions(['
    // Include testbench (for Makerchip simulation) (defaulted to 1).
    m4_default(['M4_IMPL'], 0)  // For implementation (vs. simulation).
    // Build for formal verification (defaulted to 0).
-   m4_default(['M4_FORMAL'], 1)  // 1 to enable code for formal verification
+   m4_default(['M4_FORMAL'], 0)  // 1 to enable code for formal verification
 
    // A hook for a software-controlled reset. None by default.
    m4_define(['m4_soft_reset'], 1'b0)
@@ -3619,30 +3619,28 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    // except for the returning ld data. Also signals which are not relevant to loads are pulled straight from
    // /instr to avoid unnecessary recirculation.
    |fetch
-      /instr
+      /instr_formal
          @M4_REG_WR_STAGE
-            //$pc[M4_PC_RANGE] = |fetch/instr$Pc[M4_PC_RANGE];  // A version of PC we can pull through $ANYs.
+            $pc[M4_PC_RANGE] = |fetch/instr$Pc[M4_PC_RANGE];  // A version of PC we can pull through $ANYs.
             // This scope is a copy of /instr or /instr/orig_inst if $second_issue.
             /original
-               $ANY = /instr$second_issue ? /instr/orig_inst$ANY : /instr$ANY;
+               $ANY = |fetch/instr$second_issue ? |fetch/instr/orig_inst$ANY : |fetch/instr$ANY;
                /src[2:1]
-                  $ANY = /instr$second_issue ? /instr/orig_inst/src$ANY : /instr/src$ANY;
-
-            // RVFI interface for formal verification.
-         @M4_EXECUTE_STAGE   
-            $trap = $aborting_trap ||
-                    $non_aborting_trap;
-            $rvfi_trap        = ! $reset && >>m4_eval(-M4_MAX_REDIRECT_BUBBLES + 1)$next_rvfi_good_path_mask[M4_MAX_REDIRECT_BUBBLES] &&
-                                $trap && ! $replay && ! $second_issue;  // Good-path trap, not aborted for other reasons.
+                  $ANY = |fetch/instr$second_issue ? |fetch/instr/orig_inst/src$ANY : |fetch/instr/src$ANY;
+            // RVFI interface for formal verification
+            $trap = |fetch/instr$aborting_trap ||
+                    |fetch/instr$non_aborting_trap;
+            $rvfi_trap        = ! |fetch/instr$reset && |fetch/instr>>m4_eval(-M4_MAX_REDIRECT_BUBBLES + 1)$next_rvfi_good_path_mask[M4_MAX_REDIRECT_BUBBLES] &&
+                                $trap && ! |fetch/instr$replay && ! |fetch/instr$second_issue;  // Good-path trap, not aborted for other reasons.
             // Order for the instruction/trap for RVFI check. (For split instructions, this is associated with the 1st issue, not the 2nd issue.)
-            $rvfi_order[63:0] = $reset                  ? 64'b0 :
-                                ($commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
+            $rvfi_order[63:0] = |fetch/instr$reset                  ? 64'b0 :
+                                (|fetch/instr$commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
                                                           $RETAIN;
          @M4_REG_WR_STAGE   
-            $would_reissue = ($ld) || ($div_mul);
+            $would_reissue = (|fetch/instr$ld) || (|fetch/instr$div_mul);
             //$would_reissue = ! $ld || ! $non_pipelined;
-            $retire = ($commit && !$would_reissue ) || $second_issue;
-            $rvfi_valid       = ! <<m4_eval(M4_REG_WR_STAGE - (M4_NEXT_PC_STAGE - 1))$reset &&    // Avoid asserting before $reset propagates to this stage.
+            $retire = (|fetch/instr$commit && !$would_reissue ) || |fetch/instr$second_issue;
+            $rvfi_valid       = ! |fetch/instr<<m4_eval(M4_REG_WR_STAGE - (M4_NEXT_PC_STAGE - 1))$reset &&    // Avoid asserting before $reset propagates to this stage.
                                 ($retire || $rvfi_trap );
             *rvfi_valid       = $rvfi_valid;
             *rvfi_halt        = $rvfi_trap;
@@ -3651,30 +3649,30 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             *rvfi_mode        = 2'd3;
             /original
                *rvfi_insn        = $raw;
-               *rvfi_order       = $rvfi_order;
+               *rvfi_order       = |fetch/instr_formal$rvfi_order;
                *rvfi_intr        = 1'b0;
                *rvfi_rs1_addr    = /src[1]$is_reg ? $raw_rs1 : 5'b0;
                *rvfi_rs2_addr    = /src[2]$is_reg ? $raw_rs2 : 5'b0;
                *rvfi_rs1_rdata   = /src[1]$is_reg ? /src[1]$reg_value : M4_WORD_CNT'b0;
                *rvfi_rs2_rdata   = /src[2]$is_reg ? /src[2]$reg_value : M4_WORD_CNT'b0;
-               *rvfi_rd_addr     = (/instr$dest_reg_valid && ! $abort) ? $raw_rd : 5'b0;
-               *rvfi_rd_wdata    = (| *rvfi_rd_addr) ? /instr$rslt : 32'b0;
-            *rvfi_pc_rdata    = {/original$pc[31:2], 2'b00};
-            *rvfi_pc_wdata    = {$reset          ? M4_PC_CNT'b0 :
-                                 $second_issue   ? /orig_inst$pc + 1'b1 :
-                                 $trap           ? $trap_target :
-                                 $jump           ? $jump_target :
-                                 $mispred_branch ? ($taken ? $branch_target[M4_PC_RANGE] : $pc + M4_PC_CNT'b1) :
-                                 m4_ifelse(M4_BRANCH_PRED, ['fallthrough'], [''], ['$pred_taken_branch ? $branch_target[M4_PC_RANGE] :'])
-                                 $indirect_jump  ? $indirect_jump_target :
+               *rvfi_rd_addr     = (|fetch/instr$dest_reg_valid && ! $abort) ? $raw_rd : 5'b0;
+               *rvfi_rd_wdata    = (| *rvfi_rd_addr) ? |fetch/instr$rslt : 32'b0;
+            *rvfi_pc_rdata    = {|fetch/instr_formal/original$pc[31:2], 2'b00};
+            *rvfi_pc_wdata    = {|fetch/instr$reset          ? M4_PC_CNT'b0 :
+                                 |fetch/instr$second_issue   ? |fetch/instr/orig_inst$pc + 1'b1 :
+                                 $trap           ? |fetch/instr$trap_target :
+                                 |fetch/instr$jump           ? |fetch/instr$jump_target :
+                                 |fetch/instr$mispred_branch ? (|fetch/instr$taken ? |fetch/instr$branch_target[M4_PC_RANGE] : $pc + M4_PC_CNT'b1) :
+                                 m4_ifelse(M4_BRANCH_PRED, ['fallthrough'], [''], ['|fetch/instr$pred_taken_branch ? |fetch/instr$branch_target[M4_PC_RANGE] :'])
+                                 |fetch/instr$indirect_jump  ? |fetch/instr$indirect_jump_target :
                                  $pc[31:2] +1'b1, 2'b00};
-            *rvfi_mem_addr    = (/original$ld || $valid_st) ? {/original$addr[M4_ADDR_MAX:2], 2'b0} : 0;
-            *rvfi_mem_rmask   = /original$ld ? /orig_load_inst$ld_mask : 0;
-            *rvfi_mem_wmask   = $valid_st ? $st_mask : 0;
-            *rvfi_mem_rdata   = /original$ld ? /orig_load_inst$ld_value : 0;
-            *rvfi_mem_wdata   = $valid_st ? $st_value : 0;
+            *rvfi_mem_addr    = (/original$ld || |fetch/instr$valid_st) ? {/original$addr[M4_ADDR_MAX:2], 2'b0} : 0;
+            *rvfi_mem_rmask   = /original$ld ? |fetch/instr/orig_load_inst$ld_mask : 0;
+            *rvfi_mem_wmask   = |fetch/instr$valid_st ? |fetch/instr$st_mask : 0;
+            *rvfi_mem_rdata   = /original$ld ? |fetch/instr/orig_load_inst$ld_value : 0;
+            *rvfi_mem_wdata   = |fetch/instr$valid_st ? |fetch/instr$st_value : 0;
 
-            `BOGUS_USE(/src[2]$dummy)
+            `BOGUS_USE(|fetch/instr/src[2]$dummy)
 
 // Ingress/Egress packet buffers between the CPU and NoC.
 // Packet buffers are m4+vc_flop_fifo_v2(...)s. See m4+vc_flop_fifo_v2 definition in tlv_flow_lib package
