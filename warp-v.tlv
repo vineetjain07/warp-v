@@ -289,7 +289,7 @@ m4+definitions(['
    m4_default(['M4_IMPL'], 0)  // For implementation (vs. simulation).
    // Build for formal verification (defaulted to 0).
    m4_default(['M4_FORMAL'], 0)  // 1 to enable code for formal verification
-
+   m4_default(['M4_RISCV_FORMAL_ALTOPS'], 1)
    // A hook for a software-controlled reset. None by default.
    m4_define(['m4_soft_reset'], 1'b0)
 
@@ -1913,8 +1913,8 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 \TLV riscv_rslt_mux_expr()
    $rslt[M4_WORD_RANGE] =
        $second_issue_ld ? /orig_load_inst$late_rslt : m4_ifelse_block(M4_EXT_M, 1, ['
-       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr['']m4_ifelse(['M4_FORMAL'], 0, ['>>m4_eval(M4_NON_PIPELINED_BUBBLES - 1)'])$divblock_rslt : 
-       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul) ? |fetch/instr['']m4_ifelse(['M4_FORMAL'], 1, ['>>m4_eval(3+M4_NON_PIPELINED_BUBBLES)'])$mulblock_rslt :
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr['']m4_ifelse(['M4_RISCV_FORMAL_ALTOPS'], 1, ['>>m4_eval(M4_NON_PIPELINED_BUBBLES - 1)'])$divblock_rslt : 
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul) ? |fetch/instr['']m4_ifelse(['M4_RISCV_FORMAL_ALTOPS'], 1, ['>>m4_eval(3+M4_NON_PIPELINED_BUBBLES)'])$mulblock_rslt :
        '])
        M4_WORD_CNT'b0['']m4_echo(m4_rslt_mux_expr);
 
@@ -2977,9 +2977,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 \SV
    m4_ifelse_block(M4_EXT_M, 1, ['
       m4_ifelse(M4_ISA, ['RISCV'], [''], ['m4_errprint(['M-ext supported for RISC-V only.']m4_new_line)'])
-      m4_ifelse_block(M4_FORMAL, 1, ['
-      `define RISCV_FORMAL_ALTOPS
+      m4_ifelse_block(M4_FORMAL, ['1'], ['
+         m4_define(M4_RISCV_FORMAL_ALTOPS, 1)
       '])
+      m4_ifelse_block(M4_RISCV_FORMAL_ALTOPS, 1, ['
+			`define RISCV_FORMAL_ALTOPS
+		'])
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */   
       m4_sv_include_url(['https:/']['/raw.githubusercontent.com/shivampotdar/warp-v/m_ext_formal/muldiv/picorv32_pcpi_div.sv'])
@@ -2997,12 +3000,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    // instructions is detected, and results are put in /orig_inst scope to be used in second issue.
 
    // This macro handles the stalling logic using a counter, and triggers second issue accordingly.
-   m4_ifelse(['M4_FORMAL'], 1, ['
+   m4_ifelse(M4_RISCV_FORMAL_ALTOPS, 1, ['
         m4_define(['M4_DIV_LATENCY'], 12)
    '],['
         m4_define(['M4_DIV_LATENCY'], 37)
    '])
-   // Relative to typical 1-cycle latency instructions.
+     // Relative to typical 1-cycle latency instructions.
    m4_define(['M4_MUL_LATENCY'], 5)
    @M4_NEXT_PC_STAGE
       $second_issue_div_mul = >>M4_NON_PIPELINED_BUBBLES$trigger_next_pc_div_mul_second_issue;
@@ -3397,14 +3400,16 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                   //$ANY = |fetch/instr$second_issue_ld ? /_cpu|mem/data>>M4_LD_RETURN_ALIGN$ANY : m4_ifelse(M4_EXT_M,1,['|fetch/instr$second_issue_div_mul ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F,1,['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) >>1$ANY;
                   //$ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr$second_issue_div_mul ? /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
                   m4_ifelse_block(M4_EXT_M, 1, ['
-                  $ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY;
+                  //$ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY;
+                  $ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr$second_issue_div_mul ? /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
                   '], ['
                   $ANY = /instr/orig_load_inst$ANY;
                   '])
                   /src[2:1]
                      //$ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr$second_issue_div_mul ? /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
                      m4_ifelse_block(M4_EXT_M, 1, ['
-                     $ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY;
+                     //$ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY;
+                     $ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr$second_issue_div_mul ? /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
                      '], ['
                      $ANY = /instr/orig_load_inst/src$ANY;
                      '])
@@ -3725,15 +3730,14 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             // Header
             // Construct header flit.
             $src[M4_CORE_INDEX_RANGE] = #m4_strip_prefix(/_cpu);
-            $header_flit[31:0] = {{M4_F4ANY;
-            
-            // Next PC
-            $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
-            // Current parsing does not allow concatenated state on left-hand-side, so, first, a non-state expression.
-            {$next_pc[M4_PC_RANGE], $next_no_fetch} =
-               $reset ? {M4_PC_CNT'b0, 1'b0} :
-               // ? : terms for each condition (order does matter)
-                                           {|egress_in/skid_buffer$is_csr_pkttail, |egress_in/skid_buffer$csr_wr_value};
+            $header_flit[31:0] = {{M4_FLIT_UNUSED_CNT{1'b0}},
+                                  $src,
+                                  $vc,
+                                  $csr_pktdest[m4_echo(M4_CORE_INDEX_RANGE)]
+                                 };
+         /flit
+            {$tail, $flit[M4_WORD_RANGE]} = |egress_in/instr$insert_header ? {1'b0, |egress_in/skid_buffer$header_flit} :
+                                                                             {|egress_in/skid_buffer$is_csr_pkttail, |egress_in/skid_buffer$csr_wr_value};
    /vc[*]
       |egress_in
          @1
