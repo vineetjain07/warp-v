@@ -1913,7 +1913,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 \TLV riscv_rslt_mux_expr()
    $rslt[M4_WORD_RANGE] =
        $second_issue_ld ? /orig_load_inst$late_rslt : m4_ifelse_block(M4_EXT_M, 1, ['
-       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr['']m4_ifelse(['M4_FORMAL'], 1, ['>>m4_eval(M4_NON_PIPELINED_BUBBLES - 1)'])$divblock_rslt : 
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr['']m4_ifelse(['M4_FORMAL'], 0, ['>>m4_eval(M4_NON_PIPELINED_BUBBLES - 1)'])$divblock_rslt : 
        ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul) ? |fetch/instr['']m4_ifelse(['M4_FORMAL'], 1, ['>>m4_eval(3+M4_NON_PIPELINED_BUBBLES)'])$mulblock_rslt :
        '])
        M4_WORD_CNT'b0['']m4_echo(m4_rslt_mux_expr);
