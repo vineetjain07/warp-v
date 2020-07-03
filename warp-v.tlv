@@ -27,7 +27,6 @@
    // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    // -----------------------------------------------------------------------------
    // This code is mastered in https://github.com/stevehoover/warp-v.git
-`define RISCV_FORMAL_ALTOPS
 m4+definitions(['
 
    // A highly-parameterized CPU generator, configurable for:
@@ -742,7 +741,7 @@ m4+definitions(['
              ['(! $reset && >>m4_eval(1 - $1)$next_good_path_mask[$1])'])
    //same as <<m4_eval($1)$GoodPathMask[$1]), but accessible 1 cycle earlier and without $reset term.
 
-   
+                                                                     
    // ====
    // CSRs
    // ====
@@ -1136,7 +1135,7 @@ m4+definitions(['
 '])
 \SV
 m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/stevehoover/tlv_flow_lib/4bcf06b71272556ec7e72269152561902474848e/pipeflow_lib.tlv'])'])
-
+                                             
 
 
 
@@ -1913,10 +1912,11 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 
 \TLV riscv_rslt_mux_expr()
    $rslt[M4_WORD_RANGE] =
-       $second_issue_ld ? /orig_load_inst$late_rslt :
-       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr>>m4_eval(M4_NON_PIPELINED_BUBBLES - 1)$divblock_rslt : 
-       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul) ? |fetch/instr>>m4_eval(3+M4_NON_PIPELINED_BUBBLES)$mulblock_rslt :
-                                                                    M4_WORD_CNT'b0['']m4_echo(m4_rslt_mux_expr);
+       $second_issue_ld ? /orig_load_inst$late_rslt : m4_ifelse_block(M4_EXT_M, 1, ['
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div) ? |fetch/instr['']m4_ifelse(['M4_FORMAL'], 1, ['>>m4_eval(M4_NON_PIPELINED_BUBBLES - 1)'])$divblock_rslt : 
+       ($second_issue_div_mul && |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_mul) ? |fetch/instr['']m4_ifelse(['M4_FORMAL'], 1, ['>>m4_eval(3+M4_NON_PIPELINED_BUBBLES)'])$mulblock_rslt :
+       '])
+       M4_WORD_CNT'b0['']m4_echo(m4_rslt_mux_expr);
 
 \TLV riscv_decode()
    // TODO: ?$valid_<stage> conditioning should be replaced by use of m4_prev_instr_valid_through(..).
@@ -2088,30 +2088,27 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       $divblk_valid = >>1$div_stall;
       $mulblk_valid = $multype_instr && $commit;
       /* verilator lint_off WIDTH */
-      /* verilator lint_off CASEINCOMPLETE */   
-
+      /* verilator lint_off CASEINCOMPLETE */
+      
       m4+warpv_mul(|fetch/instr,/mul1, $mulblock_rslt, $wrm, $waitm, $readym, $clk, $resetn, $mul_in1, $mul_in2, $instr_type_mul, $mulblk_valid)
       m4+warpv_div(|fetch/instr,/div1, $divblock_rslt, $wrd, $waitd, $readyd, $clk, $resetn, $div_in1, $div_in2, $instr_type_div, $divblk_valid)
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on WIDTH */
       /hold_inst
-         //$second_issue = |fetch/instr$second_issue;
-         //?$second_issue
          // put correctly aligned result for MUL and DIV Verilog modules into /orig_inst scope, 
          // valid only when we have a second issue (no bogus values propagated)
-            //$divmul_late_rslt[M4_WORD_RANGE] = |fetch/instr>>M4_NON_PIPELINED_BUBBLES$stall_cnt_upper_div ? |fetch/instr$divblock_rslt : |fetch/instr$mulblock_rslt;
-            // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
-            // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
+         // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
+         // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
          // put correctly aligned destination register for MUL and DIV Verilog modules into /orig_inst scope
          // and RETAIN till next M-type instruction, to be used again at second issue
          $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
          /src[2:1]
             $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
-
       '])
+      
       m4_ifelse_block(M4_EXT_F, 1, ['
       // "F" Extension.
-
+      
       // TODO. Current implementation of FPU is not optimized in terms of encode-decode of instruction inside marco, hence its latency and generated logic increases.
       // Need to call fpu_exe marco inside this ifelse_block itself and simplify it to optimize the unit.
       /* verilator lint_off WIDTH */
@@ -2223,7 +2220,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          $clk = *clk;
          $resetn = !(*reset);
          $instr_type_mul[3:0] = $reset ? '0 : $mulblk_valid ? {$is_mulhu_instr,$is_mulhsu_instr,$is_mulh_instr,$is_mul_instr} : $RETAIN;
-         $instr_type_div[3:0] = $reset ? '0 : (|fetch/instr$div_stall && |fetch/instr$commit) ? {$is_remu_instr,$is_rem_instr,$is_divu_instr,$is_div_instr} : $RETAIN;
+         $instr_type_div[3:0] = $reset ? '0 : ($div_stall && $commit) ? {$is_remu_instr,$is_rem_instr,$is_divu_instr,$is_div_instr} : $RETAIN;
          $mul_in1[M4_WORD_RANGE] = $reset ? '0 : $mulblk_valid ? /src[1]$reg_value : $RETAIN;
          $mul_in2[M4_WORD_RANGE] = $reset ? '0 : $mulblk_valid ? /src[2]$reg_value : $RETAIN;
          $div_in1[M4_WORD_RANGE] = $reset ? '0 : ($div_stall && $commit) ? /src[1]$reg_value : $RETAIN;
@@ -2980,7 +2977,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 \SV
    m4_ifelse_block(M4_EXT_M, 1, ['
       m4_ifelse(M4_ISA, ['RISCV'], [''], ['m4_errprint(['M-ext supported for RISC-V only.']m4_new_line)'])
-
+      m4_ifelse_block(M4_FORMAL, 1, ['
+      `define RISCV_FORMAL_ALTOPS
+      '])
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */   
       m4_sv_include_url(['https:/']['/raw.githubusercontent.com/shivampotdar/warp-v/m_ext_formal/muldiv/picorv32_pcpi_div.sv'])
@@ -2998,8 +2997,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
    // instructions is detected, and results are put in /orig_inst scope to be used in second issue.
 
    // This macro handles the stalling logic using a counter, and triggers second issue accordingly.
-
-   m4_define(['M4_DIV_LATENCY'], 12)  // Relative to typical 1-cycle latency instructions.
+   m4_ifelse(['M4_FORMAL'], 1, ['
+        m4_define(['M4_DIV_LATENCY'], 12)
+   '],['
+        m4_define(['M4_DIV_LATENCY'], 37)
+   '])
+   // Relative to typical 1-cycle latency instructions.
    m4_define(['M4_MUL_LATENCY'], 5)
    @M4_NEXT_PC_STAGE
       $second_issue_div_mul = >>M4_NON_PIPELINED_BUBBLES$trigger_next_pc_div_mul_second_issue;
@@ -3389,12 +3392,22 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                   $ANY = /_cpu|mem/data>>M4_LD_RETURN_ALIGN$ANY;
                   /src[2:1]
                      $ANY = /_cpu|mem/data/src>>M4_LD_RETURN_ALIGN$ANY;
-            ?$second_issue       
+            ?$second_issue
                /orig_inst
                   //$ANY = |fetch/instr$second_issue_ld ? /_cpu|mem/data>>M4_LD_RETURN_ALIGN$ANY : m4_ifelse(M4_EXT_M,1,['|fetch/instr$second_issue_div_mul ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F,1,['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/orig_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) >>1$ANY;
-                  $ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr$second_issue_div_mul ? /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
+                  //$ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr$second_issue_div_mul ? /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
+                  m4_ifelse_block(M4_EXT_M, 1, ['
+                  $ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY;
+                  '], ['
+                  $ANY = /instr/orig_load_inst$ANY;
+                  '])
                   /src[2:1]
-                     $ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr$second_issue_div_mul ? /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
+                     //$ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr$second_issue_div_mul ? /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY : >>1$ANY;
+                     m4_ifelse_block(M4_EXT_M, 1, ['
+                     $ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY;
+                     '], ['
+                     $ANY = /instr/orig_load_inst/src$ANY;
+                     '])
             
             // Next PC
             $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
@@ -3643,7 +3656,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             //$would_reissue = ! $ld || ! $non_pipelined;
             $retire = (|fetch/instr$commit && !$would_reissue ) || |fetch/instr$second_issue;
             $rvfi_valid       = ! |fetch/instr<<m4_eval(M4_REG_WR_STAGE - (M4_NEXT_PC_STAGE - 1))$reset &&    // Avoid asserting before $reset propagates to this stage.
-                                ($retire && !$rvfi_trap );
+                                ($retire || $rvfi_trap );
             *rvfi_valid       = $rvfi_valid;
             *rvfi_halt        = $rvfi_trap;
             *rvfi_trap        = $rvfi_trap;
