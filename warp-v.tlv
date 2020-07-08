@@ -1,5 +1,6 @@
 \m4_TLV_version 1d: tl-x.org
 \SV
+
    // -----------------------------------------------------------------------------
    // Copyright (c) 2018, Steven F. Hoover
    // 
@@ -3088,10 +3089,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
                      (/_top$_instr_type == 4'b0010 ) ? 3'b101 : // divu
                      (/_top$_instr_type == 4'b0100 ) ? 3'b110 : // rem
                      (/_top$_instr_type == 4'b1000 ) ? 3'b111 : // remu
-                                                       3'b100 ; // default to mul, but this case 
+                                                       3'b100 ; // default to div, but this case 
                                                                 // should not be encountered ideally
       $div_insn[31:0] = {7'b0000001,10'b0011000101,3'b000,5'b00101,7'b0110011} | ($opcode << 12);
-                        // {  funct7  ,{rs2, rs1} (X), funct3, rd (X),  opcode  }   
+                     // {  funct7  ,{rs2, rs1} (X), funct3, rd (X),  opcode  }   
       // this module is located in ./muldiv/picorv32_div_opt.sv
       \SV_plus
             picorv32_pcpi_div div(
