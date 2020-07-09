@@ -303,7 +303,7 @@ m4+definitions(['
    // Include testbench (for Makerchip simulation) (defaulted to 1).
    m4_default(['M4_IMPL'], 0)  // For implementation (vs. simulation).
    // Build for formal verification (defaulted to 0).
-   m4_default(['M4_FORMAL'], 0)  // 1 to enable code for formal verification
+   m4_default(['M4_FORMAL'], 1)  // 1 to enable code for formal verification
 	m4_default(['M4_RISCV_FORMAL_ALTOPS'], 0)  // riscv-formal uses alternate operations (add/sub and xor with a constant value)
                                               // instead of actual mul/div, this is enabled automatically when formal is used, 
                                               // can be enabled manually for testing in Makerchip environment.
@@ -429,7 +429,7 @@ m4+definitions(['
             (['M4_EXT_I'], 1),
             (['M4_EXT_M'], 1),
             (['M4_EXT_A'], 0),
-            (['M4_EXT_F'], 0),
+            (['M4_EXT_F'], 1),
             (['M4_EXT_D'], 0),
             (['M4_EXT_Q'], 0),
             (['M4_EXT_L'], 0),
@@ -455,8 +455,8 @@ m4+definitions(['
 
    // Which program to assemble.
    // this depends on the ISA extension(s) choice
-   m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
-   //m4_ifelse(M4_EXT_F, 1, ['m4_define(['M4_PROG_NAME'], ['fpu_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   //m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   m4_ifelse(M4_EXT_F, 1, ['m4_define(['M4_PROG_NAME'], ['fpu_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
 
    // =====Done Defining Configuration=====
    
@@ -2142,7 +2142,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       $fpu_div_sqrt_valid = >>1$fpu_div_sqrt_stall;
       $input_valid = $fpu_div_sqrt_type_instr && |fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit;
       `BOGUS_USE($fpu_div_sqrt_valid)
-      
       // Main FPU execution
       m4+fpu_exe(/fpu1,|fetch/instr, 8, 24, 32, $operand_a, $operand_b, $operand_c, $int_input, $int_output, $fpu_operation, $rounding_mode, $nreset, $clock, $input_valid, $outvalid, $lt_compare, $eq_compare, $gt_compare, $unordered, $output_result, $output_div_sqrt11, $output_class, $exception_invaild_output, $exception_infinite_output, $exception_overflow_output, $exception_underflow_output, $exception_inexact_output)
       
@@ -3435,9 +3434,9 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
             ?$second_issue
                /orig_inst
                   // pull values from /orig_load_inst or /hold_inst depending on which second issue
-                  $ANY = /instr$second_issue_ld ? /instr/orig_load_inst$ANY : m4_ifelse(M4_EXT_M, 1, ['/instr$second_issue_div_mul ? /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F, 1, ['/instr$fpu_second_issue_div_sqrt ? /instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) /instr/orig_load_inst$ANY;
+                  $ANY = |fetch/instr$second_issue_ld ? |fetch/instr/orig_load_inst$ANY : m4_ifelse(M4_EXT_M, 1, ['|fetch/instr$second_issue_div_mul ? |fetch/instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F, 1, ['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/hold_inst>>M4_NON_PIPELINED_BUBBLES$ANY :']) |fetch/instr/orig_load_inst$ANY;
                   /src[2:1]
-                     $ANY = /instr$second_issue_ld ? /instr/orig_load_inst/src$ANY : m4_ifelse(M4_EXT_M, 1, ['/instr$second_issue_div_mul ? /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F, 1, ['/instr$fpu_second_issue_div_sqrt ? /instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY :']) /instr/orig_load_inst/src$ANY;
+                     $ANY = |fetch/instr$second_issue_ld ? |fetch/instr/orig_load_inst/src$ANY : m4_ifelse(M4_EXT_M, 1, ['|fetch/instr$second_issue_div_mul ? |fetch/instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY :']) m4_ifelse(M4_EXT_F, 1, ['|fetch/instr$fpu_second_issue_div_sqrt ? |fetch/instr/hold_inst/src>>M4_NON_PIPELINED_BUBBLES$ANY :']) |fetch/instr/orig_load_inst/src$ANY;
             
             // Next PC
             $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
