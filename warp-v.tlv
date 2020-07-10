@@ -2133,11 +2133,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4_ifelse_block(M4_EXT_F,0,['
       $fpu_div_sqrt_stall = 0;
       '])
-      /hold_inst
-         $ANY = m4_ifelse(M4_EXT_M,1,['(|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit))']) m4_ifelse(M4_EXT_F,1,['|| (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)']) ? |fetch/instr$ANY : >>1$ANY;
-         /src[2:1]
-            $ANY = m4_ifelse(M4_EXT_M,1,['(|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit))']) m4_ifelse(M4_EXT_F,1,['|| (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)']) ? |fetch/instr/src$ANY : >>1$ANY;
-      
+            
       m4_ifelse_block(M4_EXT_F, 1, ['
       // "F" Extension.
 
@@ -2162,9 +2158,12 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       //   $ANY = (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit) ? |fetch/instr$ANY : >>1$ANY;
       //   /src[2:1]
       //      $ANY = (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit) ? |fetch/instr/src$ANY : >>1$ANY;
-
       '])
-
+      
+      /hold_inst
+         $ANY = m4_ifelse(M4_EXT_M,1,['(|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit))']) m4_ifelse(M4_EXT_F,1,['|| (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)']) ? |fetch/instr$ANY : >>1$ANY;
+         /src[2:1]
+            $ANY = m4_ifelse(M4_EXT_M,1,['(|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit))']) m4_ifelse(M4_EXT_F,1,['|| (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)']) ? |fetch/instr/src$ANY : >>1$AN
       // Compute results for each instruction, independent of decode (power-hungry, but fast).
       ?$valid_exe
          $equal = /src[1]$reg_value == /src[2]$reg_value;
