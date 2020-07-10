@@ -2127,11 +2127,11 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       // retain till next M-type instruction, to be used again at second issue
       '])
       m4_ifelse_block(M4_EXT_M,0,['
-      $mulblk_valid = 0;
-      $div_stall = 0;
+      //$mulblk_valid = 0;
+      //$div_stall = 0;
       '])
       m4_ifelse_block(M4_EXT_F,0,['
-      $fpu_div_sqrt_stall = 0;
+      //$fpu_div_sqrt_stall = 0;
       '])
             
       m4_ifelse_block(M4_EXT_F, 1, ['
