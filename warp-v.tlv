@@ -2122,6 +2122,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on WIDTH */
       ///hold_inst
+      $fpu_div_sqrt_stall = 0;
       /hold_inst
          $ANY = ((|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) || (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
          /src[2:1]
@@ -2131,7 +2132,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
          // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
          // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
          // retain till next M-type instruction, to be used again at second issue
-      `BOGUS_USE($fpu_div_sqrt_stall)
+         `BOGUS_USE($fpu_div_sqrt_stall)
       //   $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
       //   /src[2:1]
       //      $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
