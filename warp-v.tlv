@@ -618,7 +618,7 @@ m4+definitions(['
          m4_define(['M4_BITS_PER_ADDR'], 8)  // 8 for byte addressing.
          m4_define_vector(['M4_WORD'], 32)
          m4_define_hier(['M4_REGS'], 32, 1)
-         m4_define_hier(['M4_FPUREGS'], 32, 1)
+         m4_define_hier(['M4_FPUREGS'], 32, 0)
       '],
       ['MIPSI'], ['
          m4_define_vector_with_fields(M4_INSTR, 32, OPCODE, 26, RS, 21, RT, 16, RD, 11, SHAMT, 6, FUNCT, 0)
