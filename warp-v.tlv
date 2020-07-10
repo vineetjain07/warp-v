@@ -303,7 +303,7 @@ m4+definitions(['
    // Include testbench (for Makerchip simulation) (defaulted to 1).
    m4_default(['M4_IMPL'], 0)  // For implementation (vs. simulation).
    // Build for formal verification (defaulted to 0).
-   m4_default(['M4_FORMAL'], 1)  // 1 to enable code for formal verification
+   m4_default(['M4_FORMAL'], 0)  // 1 to enable code for formal verification
 	m4_default(['M4_RISCV_FORMAL_ALTOPS'], 0)  // riscv-formal uses alternate operations (add/sub and xor with a constant value)
                                               // instead of actual mul/div, this is enabled automatically when formal is used, 
                                               // can be enabled manually for testing in Makerchip environment.
@@ -429,7 +429,7 @@ m4+definitions(['
             (['M4_EXT_I'], 1),
             (['M4_EXT_M'], 1),
             (['M4_EXT_A'], 0),
-            (['M4_EXT_F'], 0),
+            (['M4_EXT_F'], 1),
             (['M4_EXT_D'], 0),
             (['M4_EXT_Q'], 0),
             (['M4_EXT_L'], 0),
@@ -2122,11 +2122,16 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on WIDTH */
       ///hold_inst
+      /hold_inst
+         $ANY = ((|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) || (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
+         /src[2:1]
+            $ANY = ((|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) || (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
+
          // use $ANY for passing attributes from long-latency div/mul instructions into the pipeline 
          // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
          // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
          // retain till next M-type instruction, to be used again at second issue
-
+      `BOGUS_USE($fpu_div_sqrt_stall)
       //   $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
       //   /src[2:1]
       //      $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
