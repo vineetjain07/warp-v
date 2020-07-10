@@ -455,8 +455,8 @@ m4+definitions(['
 
    // Which program to assemble.
    // this depends on the ISA extension(s) choice
-   //m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
-   m4_ifelse(M4_EXT_F, 1, ['m4_define(['M4_PROG_NAME'], ['fpu_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   m4_ifelse(M4_EXT_M, 1, ['m4_define(['M4_PROG_NAME'], ['divmul_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
+   //m4_ifelse(M4_EXT_F, 1, ['m4_define(['M4_PROG_NAME'], ['fpu_test'])'], ['m4_define(['M4_PROG_NAME'], ['cnt10'])'])
 
    // =====Done Defining Configuration=====
    
@@ -2121,22 +2121,23 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
 
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on WIDTH */
-      ///hold_inst
-      $fpu_div_sqrt_stall = 0;
-      /hold_inst
-         $ANY = ((|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) || (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
-         /src[2:1]
-            $ANY = ((|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) || (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
-
-         // use $ANY for passing attributes from long-latency div/mul instructions into the pipeline 
-         // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
-         // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
-         // retain till next M-type instruction, to be used again at second issue
-         `BOGUS_USE($fpu_div_sqrt_stall)
-      //   $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
-      //   /src[2:1]
-      //      $ANY = (|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
+      // use $ANY for passing attributes from long-latency div/mul instructions into the pipeline 
+      // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
+      // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
+      // retain till next M-type instruction, to be used again at second issue
       '])
+      m4_ifelse_block(M4_EXT_M,0,['
+      $mulblk_valid = 0;
+      $div_stall = 0;
+      '])
+      m4_ifelse_block(M4_EXT_F,0,['
+      $fpu_div_sqrt_stall = 0;
+      '])
+      /hold_inst
+         $ANY = m4_ifelse(M4_EXT_M,1,['(|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit))']) m4_ifelse(M4_EXT_F,1,['|| (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)']) ? |fetch/instr$ANY : >>1$ANY;
+         /src[2:1]
+            $ANY = m4_ifelse(M4_EXT_M,1,['(|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit))']) m4_ifelse(M4_EXT_F,1,['|| (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)']) ? |fetch/instr/src$ANY : >>1$ANY;
+      
       m4_ifelse_block(M4_EXT_F, 1, ['
       // "F" Extension.
 
@@ -2157,10 +2158,10 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4+sgn_abs_injn(8, 24, $operand_a, $operand_b, $fsgnjxs_output)
       /* verilator lint_on WIDTH */
       /* verilator lint_on CASEINCOMPLETE */
-      /hold_inst
-         $ANY = ((|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) || (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)) ? |fetch/instr$ANY : >>1$ANY;
-         /src[2:1]
-            $ANY = ((|fetch/instr$mulblk_valid || (|fetch/instr$div_stall && |fetch/instr$commit)) || (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit)) ? |fetch/instr/src$ANY : >>1$ANY;
+      ///hold_inst
+      //   $ANY = (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit) ? |fetch/instr$ANY : >>1$ANY;
+      //   /src[2:1]
+      //      $ANY = (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit) ? |fetch/instr/src$ANY : >>1$ANY;
 
       '])
 
