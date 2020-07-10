@@ -2126,14 +2126,7 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
       // retain till next M-type instruction, to be used again at second issue
       '])
-      m4_ifelse_block(M4_EXT_M,0,['
-      //$mulblk_valid = 0;
-      //$div_stall = 0;
-      '])
-      m4_ifelse_block(M4_EXT_F,0,['
-      //$fpu_div_sqrt_stall = 0;
-      '])
-            
+ 
       m4_ifelse_block(M4_EXT_F, 1, ['
       // "F" Extension.
 
@@ -2154,10 +2147,6 @@ m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/
       m4+sgn_abs_injn(8, 24, $operand_a, $operand_b, $fsgnjxs_output)
       /* verilator lint_on WIDTH */
       /* verilator lint_on CASEINCOMPLETE */
-      ///hold_inst
-      //   $ANY = (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit) ? |fetch/instr$ANY : >>1$ANY;
-      //   /src[2:1]
-      //      $ANY = (|fetch/instr$fpu_div_sqrt_stall && |fetch/instr$commit) ? |fetch/instr/src$ANY : >>1$ANY;
       '])
       
       /hold_inst
@@ -4256,6 +4245,91 @@ m4+module_def
                         '$value'.step(1).asInt(NaN).toString() + oldValStr);
                      this.getInitObject("reg").setFill(pending ? "red" : mod ? "blue" : "black");
                   }
+            /regcsr
+               \viz_alpha
+                  initEach: function() {
+                     let cycle = new fabric.Text("", {
+                        top: 18 * 33,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 375, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     let cycleh = new fabric.Text("", {
+                        top: 18 * 34,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 375, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     let time = new fabric.Text("", {
+                        top: 18 * 35,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 375, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     let timeh = new fabric.Text("", {
+                        top: 18 * 36,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 375, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     let instret = new fabric.Text("", {
+                        top: 18 * 37,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 375, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     let instreth = new fabric.Text("", {
+                        top: 18 * 38,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 375, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     return {objects: {cycle: cycle, cycleh: cycleh, time: time, timeh: timeh, instret: instret, instreth: instreth}};
+                     },
+                     renderEach: function() {
+                        var cyclemod = '/instr$csr_cycle_hw_wr'.asBool(false);
+                        var cyclehmod = '/instr$csr_cycleh_hw_wr'.asBool(false);
+                        var timemod = '/instr$csr_time_hw_wr'.asBool(false);
+                        var timehmod = '/instr$csr_timeh_hw_wr'.asBool(false);
+                        var instretmod = '/instr$csr_instret_hw_wr'.asBool(false);
+                        var instrethmod = '/instr$csr_instreth_hw_wr'.asBool(false);
+                        var cyclename    = String("cycle");
+                        var cyclehname   = String("cycleh");
+                        var timename     = String("time");
+                        var timehname    = String("timeh");
+                        var instretname  = String("instret");
+                        var instrethname = String("instreth");
+                        var oldValcycle    = cyclemod    ? `(${'/instr$csr_cycle'.asInt(NaN).toString()})` : "";
+                        var oldValcycleh   = cyclehmod   ? `(${'/instr$csr_cycleh'.asInt(NaN).toString()})` : "";
+                        var oldValtime     = timemod     ? `(${'/instr$csr_time'.asInt(NaN).toString()})` : "";
+                        var oldValtimeh    = timehmod    ? `(${'/instr$csr_timeh'.asInt(NaN).toString()})` : "";
+                        var oldValinstret  = instretmod  ? `(${'/instr$csr_instret'.asInt(NaN).toString()})` : "";
+                        var oldValinstreth = instrethmod ? `(${'/instr$csr_instreth'.asInt(NaN).toString()})` : "";
+                        this.getInitObject("cycle").setText(
+                           cyclename + ": " +
+                           '/instr$csr_cycle'.step(1).asInt(NaN).toString() + oldValcycle);
+                        this.getInitObject("cycleh").setText(
+                           cyclehname + ": " +
+                           '/instr$csr_cycleh'.step(1).asInt(NaN).toString() + oldValcycleh);
+                        this.getInitObject("time").setText(
+                           timename + ": " +
+                           '/instr$csr_time'.step(1).asInt(NaN).toString() + oldValtime);
+                        this.getInitObject("timeh").setText(
+                           timehname + ": " +
+                           '/instr$csr_timeh'.step(1).asInt(NaN).toString() + oldValtimeh);
+                        this.getInitObject("instret").setText(
+                           instretname + ": " +
+                           '/instr$csr_instret'.step(1).asInt(NaN).toString() + oldValinstret);
+                        this.getInitObject("instreth").setText(
+                           instrethname + ": " +
+                           '/instr$csr_instreth'.step(1).asInt(NaN).toString() + oldValinstreth);
+                        this.getInitObject("cycle").setFill( cyclemod ? "blue" : "black");
+                        this.getInitObject("cycleh").setFill( cyclehmod ? "blue" : "black");
+                        this.getInitObject("time").setFill( timemod ? "blue" : "black");
+                        this.getInitObject("timeh").setFill( timehmod ? "blue" : "black");
+                        this.getInitObject("instret").setFill( instretmod ? "blue" : "black");
+                        this.getInitObject("instreth").setFill( instrethmod ? "blue" : "black");
+                     }
             m4_ifelse_block(M4_EXT_F, 1, ['
             /fpuregs[M4_FPUREGS_RANGE]  // TODO: Fix [*]
                \viz_alpha
@@ -4284,6 +4358,52 @@ m4+module_def
                         regIdent + ": " +
                         '$fpuvalue'.step(1).asInt(NaN).toString(16) + oldValStr);
                      this.getInitObject("fpureg").setFill(pending ? "red" : mod ? "blue" : "black");
+                  }
+            /fpucsr
+               \viz_alpha
+                  initEach: function() {
+                     let fcsr = new fabric.Text("", {
+                        top: 18 * 33,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 250, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     let frm = new fabric.Text("", {
+                        top: 18 * 34,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 250, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     let fflags = new fabric.Text("", {
+                        top: 18 * 35,
+                        left: m4_case(M4_ISA, ['MINI'], 200, ['RISCV'], 250, ['MIPSI'], 400, ['DUMMY'], 200),
+                        fontSize: 14,
+                        fontFamily: "monospace"
+                     });
+                     return {objects: {fcsr: fcsr, frm: frm, fflags: fflags}};
+                  },
+                  renderEach: function() {
+                     var fcsrmod = '/instr$csr_fcsr_hw_wr'.asBool(false);
+                     var frmmod = '/instr$csr_frm_hw_wr'.asBool(false);
+                     var fflagsmod = '/instr$csr_fflags_hw_wr'.asBool(false);
+                     var fcsrname = String("fcsr");
+                     var frmname = String("frm");
+                     var fflagsname = String("fflags");
+                     var oldValfcsr = fcsrmod ? `(${'/instr$csr_fcsr'.asInt(NaN).toString(16)})` : "";
+                     var oldValfrm =  frmmod ? `(${'/instr$csr_frm'.asInt(NaN).toString(16)})` : "";
+                     var oldValfflags = fflagsmod ? `(${'/instr$csr_fflags'.asInt(NaN).toString(16)})` : "";
+                     this.getInitObject("fcsr").setText(
+                        fcsrname + ": " +
+                        '/instr$csr_fcsr'.step(1).asInt(NaN).toString(16) + oldValfcsr);
+                     this.getInitObject("frm").setText(
+                        frmname + ": " +
+                        '/instr$csr_frm'.step(1).asInt(NaN).toString(16) + oldValfrm);
+                     this.getInitObject("fflags").setText(
+                        fflagsname + ": " +
+                        '/instr$csr_fflags'.step(1).asInt(NaN).toString(16) + oldValfflags);
+                     this.getInitObject("fcsr").setFill( fcsrmod ? "blue" : "black");
+                     this.getInitObject("frm").setFill( frmmod ? "blue" : "black");
+                     this.getInitObject("fflags").setFill( fflagsmod ? "blue" : "black");
                   }
                '])
 
