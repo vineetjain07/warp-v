@@ -28,7 +28,7 @@
    // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    // -----------------------------------------------------------------------------
    // This code is mastered in https://github.com/stevehoover/warp-v.git
-`define RISCV_FORMAL_ALTOPS
+
 m4+definitions(['
 
    // A highly-parameterized CPU generator, configurable for:
@@ -1661,7 +1661,6 @@ m4+definitions(['
       $mulblk_valid = $multype_instr && $commit;
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */   
-
       m4+warpv_mul(|fetch/instr,/mul1, $mulblock_rslt, $wrm, $waitm, $readym, $clk, $resetn, $mul_in1, $mul_in2, $instr_type_mul, $mulblk_valid)
       m4+warpv_div(|fetch/instr,/div1, $divblock_rslt, $wrd, $waitd, $readyd, $clk, $resetn, $div_in1, $div_in2, $instr_type_div, >>1$div_stall)
       // for the division module, the valid signal must be asserted for the entire computation duration, hence >>1$div_stall is used for this purpose
@@ -2612,7 +2611,7 @@ m4+definitions(['
                      (/_top$_instr_type == 4'b0010) ? 3'b001 : // mulh
                      (/_top$_instr_type == 4'b0100) ? 3'b010 : // mulhsu
                      (/_top$_instr_type == 4'b1000) ? 3'b011 : // mulhu
-                                                      >>1$opcode[2:0] ; // default to mul, but this case 
+                                                      3'b000 ; // default to mul, but this case 
                                                                // should not be encountered ideally
 
       $mul_insn[31:0] = {7'b0000001,10'b0011000101,$opcode,5'b00101,7'b0110011};
@@ -2996,7 +2995,6 @@ m4+definitions(['
             // Then as state.
             $Pc[M4_PC_RANGE] <= $next_pc;
             $NoFetch <= $next_no_fetch;
-            $pc[M4_PC_RANGE] = |fetch/instr$Pc[M4_PC_RANGE];
          
          @M4_DECODE_STAGE
 
@@ -3106,7 +3104,6 @@ m4+definitions(['
             // =======
             
             // Execute stage redirect conditions.
-
             $non_pipelined = $div_mul m4_ifelse(M4_EXT_F, 1, ['|| $fpu_div_sqrt_type_instr']);
             $replay_trap = m4_cpu_blocked;
             $aborting_trap = $replay_trap || $illegal || $aborting_isa_trap;
@@ -3222,8 +3219,8 @@ m4+definitions(['
                                 $trap && ! $replay && ! $second_issue;  // Good-path trap, not aborted for other reasons.
             
             // Order for the instruction/trap for RVFI check. (For split instructions, this is associated with the 1st issue, not the 2nd issue.)
-            $rvfi_order[63:0] = |fetch/instr$reset                  ? 64'b0 :
-                                (|fetch/instr$commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
+            $rvfi_order[63:0] = |$reset                  ? 64'b0 :
+                                ($commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
                                                           $RETAIN;
          @M4_REG_WR_STAGE
             // verify in register writeback stage
@@ -3250,7 +3247,7 @@ m4+definitions(['
             *rvfi_mode        = 2'd3;
             /original
                *rvfi_insn        = $raw;
-               *rvfi_order       = |fetch/instr_formal$rvfi_order;
+               *rvfi_order       = $rvfi_order;
                *rvfi_intr        = 1'b0;
                *rvfi_rs1_addr    = /src[1]$is_reg ? $raw_rs1 : 5'b0;
                *rvfi_rs2_addr    = /src[2]$is_reg ? $raw_rs2 : 5'b0;
@@ -3273,7 +3270,7 @@ m4+definitions(['
             *rvfi_mem_rdata   = /original$ld ? /orig_load_inst$ld_value : 0;
             *rvfi_mem_wdata   = $valid_st ? $st_value : 0;
 
-            `BOGUS_USE(|fetch/instr/src[2]$dummy)
+            `BOGUS_USE(/src[2]$dummy)
 
 // Ingress/Egress packet buffers between the CPU and NoC.
 // Packet buffers are m4+vc_flop_fifo_v2(...)s. See m4+vc_flop_fifo_v2 definition in tlv_flow_lib package
@@ -3311,15 +3308,14 @@ m4+definitions(['
             // Header
             // Construct header flit.
             $src[M4_CORE_INDEX_RANGE] = #m4_strip_prefix(/_cpu);
-            $header_flit[31:0] = {{M4_F4ANY;
-            
-            // Next PC
-            $pc_inc[M4_PC_RANGE] = $Pc + M4_PC_CNT'b1;
-            // Current parsing does not allow concatenated state on left-hand-side, so, first, a non-state expression.
-            {$next_pc[M4_PC_RANGE], $next_no_fetch} =
-               $reset ? {M4_PC_CNT'b0, 1'b0} :
-               // ? : terms for each condition (order does matter)
-                                           {|egress_in/skid_buffer$is_csr_pkttail, |egress_in/skid_buffer$csr_wr_value};
+            $header_flit[31:0] = {{M4_FLIT_UNUSED_CNT{1'b0}},
+                                  $src,
+                                  $vc,
+                                  $csr_pktdest[m4_echo(M4_CORE_INDEX_RANGE)]
+                                 };
+         /flit
+            {$tail, $flit[M4_WORD_RANGE]} = |egress_in/instr$insert_header ? {1'b0, |egress_in/skid_buffer$header_flit} :
+                                                                             {|egress_in/skid_buffer$is_csr_pkttail, |egress_in/skid_buffer$csr_wr_value};
    /vc[*]
       |egress_in
          @1
