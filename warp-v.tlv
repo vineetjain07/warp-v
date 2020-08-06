@@ -3219,7 +3219,7 @@ m4+definitions(['
                                 $trap && ! $replay && ! $second_issue;  // Good-path trap, not aborted for other reasons.
             
             // Order for the instruction/trap for RVFI check. (For split instructions, this is associated with the 1st issue, not the 2nd issue.)
-            $rvfi_order[63:0] = |$reset                  ? 64'b0 :
+            $rvfi_order[63:0] = $reset                  ? 64'b0 :
                                 ($commit || $rvfi_trap) ? >>1$rvfi_order + 64'b1 :
                                                           $RETAIN;
          @M4_REG_WR_STAGE
