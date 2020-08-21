@@ -2107,7 +2107,7 @@ m4+definitions(['
          $input_b[31:0] = $is_src_type_instr ? /src[2]$reg_value : $raw_i_imm;
          $input_c[31:0] = /src[1]$reg_value; //This is needed for rvb_shifter_output
          
-         $sftamt[4:0] = $input_b[4:0];
+         $sftamt[4:0] = $input_b[6:0];
          $din_insn3   = |fetch/instr$raw[3];
          $din_insn12  = |fetch/instr$raw[12];
          $din_insn13  = |fetch/instr$raw[13];
