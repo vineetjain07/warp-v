@@ -133,9 +133,9 @@
 // e.g. m4+rorl_final(32, 1, $input, $sftamt, $output, 31, 0)
 \TLV rorl_final(#_varbits,#_stage,$_reg_value,$_sft_amt,$_rotl,#_max,#_min) 
    \always_comb
+      integer i;
       $['']$_rotl['']#_stage[#_max : #_min] = 0;
-      for (int i = #_min; i <= #_max; i++)
-      begin
+      for ( i = #_min; i <= #_max; i = i + 1)  begin
          $_rotl['']#_stage[i] = ($_sft_amt[#_stage - 1] == 0) ?
               $_reg_value[i] : (i >= 0 && i < (2**(#_stage - 1))) ?
               $_reg_value[(i+((#_max + 1) - (2**(#_stage - 1))))] :
@@ -171,14 +171,14 @@
    /_brev_stage[''][(#_constbits - 1) : 0]
       $brev_stage_val['']#_stageinc = (/_top$sft_amt[#_stage] == 1'b0)  ? /_top$_data_value[#m4_brev_stage] :
           ((#m4_brev_stage % (2 ** #_stageinc)) == 0 ) ? /_top$_data_value[#m4_brev_stage + (2 ** #_stage)] :
-          /_top$_data_value[#m4_brev_stage - (2 ** #_stage)];
+          /_top$_data_value[(#m4_brev_stage + (2 ** (#_stageinc - #_stage))) % (2 ** #_stageinc) ];
    m4+brev_final(/_top,/_brev_stage,#_constbits,m4_eval(#_varbits / 2), m4_eval(#_stage + 1),m4_eval(#_stageinc + 1),$brev_stage_val['']#_stageinc,$sft_amt,$resultq)
    '],['
    /_brev_stage[''][(#_constbits - 1) : 0]
       $brev_stage_val['']#_stageinc = (/_top$sft_amt[#_stage] == 1'b0)  ? /_top/_brev_stage[['']#m4_brev_stage]$_data_value :
           ( ((['']#m4_brev_stage % (2 ** #_stageinc)) >= 0) && ((['']#m4_brev_stage % (2 ** #_stageinc)) < (2 ** #_stage) )) ? /_top/_brev_stage[['']#m4_brev_stage + (2 ** #_stage)]$_data_value:
-          /_top/_brev_stage[#m4_brev_stage - (2 ** #_stage)]$_data_value;
-   m4_ifelse_block(m4_eval(#_varbits > 2), 1, ['
+          /_top/_brev_stage[(#m4_brev_stage + (2 ** (#_stageinc - #_stage)) % (2 ** #_stageinc) ]$_data_value;
+   m4_ifelse_block(m4_eval(#_varbits >= 1), 1, ['
    m4+brev_final(/_top,/_brev_stage,#_constbits,m4_eval(#_varbits / 2), m4_eval(#_stage + 1),m4_eval(#_stageinc + 1),$brev_stage_val['']#_stageinc,$sft_amt,$resultq)
    '], ['
    $resultq[(#_constbits - 1) : 0] = /_brev_stage[*]$brev_stage_val['']#_stageinc;
