@@ -33,12 +33,21 @@
    m4_popdef(['m4_ctz_stage'])
    
 // 3) popcnt (count no. of '1' in the input)
+
+\TLV redoo($_redux_sig,/_hier,#_MAX,#_MIN,$_sig,$_init_expr ,_op)
+   integer i;
+   \always_comb
+      $['']$_redux_sig = $_init_expr ;
+      for (i = #_MIN; i <= #_MAX; i = i + 1) begin
+         $_redux_sig = $_redux_sig _op /_hier[i]$_sig;
+      end
+
 // e.g. m4+popcnt(|pipe, /pop_stage, $input, $output, 32)
 \TLV popcnt(/_top, /_pop_bit, $_input, $_output, #_XLEN)
    m4_pushdef(['m4_pop_bit'], m4_strip_prefix(/_pop_bit))
    /_pop_bit[['']#_XLEN -1 : 0]
       $pop_temp[#_XLEN -1 : 0] = { {(#_XLEN - 1){1'b0}} ,/_top$_input[#m4_pop_bit]};
-   m4+redux($_output[\$clog2(#_XLEN) : 0], /_pop_bit, m4_eval(#_XLEN - 1) , 0, $pop_temp, '0, +)
+   m4+redoo($_output[\$clog2(#_XLEN) : 0], /_pop_bit, m4_eval(#_XLEN - 1) , 0, $pop_temp, '0, +)
    m4_popdef(['m4_pop_bit'])
    
 // 4) Logic-with-negate instructions (andn, orn, xnor)
@@ -132,14 +141,12 @@
 // 26) ROTL (rotate left)
 // e.g. m4+rorl_final(32, 1, $input, $sftamt, $output, 31, 0)
 \TLV rorl_final(#_varbits,#_stage,$_reg_value,$_sft_amt,$_rotl,#_max,#_min) 
+   //integer i;
    \always_comb
-      integer i;
-      $['']$_rotl['']#_stage[#_max : #_min] = 0;
-      for ( i = #_min; i <= #_max; i = i + 1)  begin
-         $_rotl['']#_stage[i] = ($_sft_amt[#_stage - 1] == 0) ?
-              $_reg_value[i] : (i >= 0 && i < (2**(#_stage - 1))) ?
-              $_reg_value[(i+((#_max + 1) - (2**(#_stage - 1))))] :
-              $_reg_value[(i-(2**(#_stage - 1)))]; end
+      $['']$_rotl['']#_stage[#_max : #_min] = '0;
+      for (integer i = #_min; i <= #_max; i = i + 1) begin
+         $_rotl['']#_stage[i] = ($_sft_amt[#_stage - 1] == 0) ? $_reg_value[i] : (i >= 0 && i < (2**(#_stage - 1))) ?  $_reg_value[(i+((#_max + 1) - (2**(#_stage - 1))))] : $_reg_value[(i-(2**(#_stage - 1)))];
+      end
    m4_ifelse_block(m4_eval(#_varbits > 2), 1, ['
    m4+rorl_final(m4_eval(#_varbits / 2), m4_eval(#_stage + 1), $_rotl['']#_stage, $_sft_amt, $_rotl, #_max, #_min)
    '], ['
