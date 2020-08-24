@@ -1828,6 +1828,17 @@ m4+definitions(['
       //m4+rorl_final(32, 1, $input_a, $sftamt, $rorl_final_output, 31, 0)
       //m4+rorr_final(32, 1, $input_a, $sftamt, $rorr_final_output, 31, 0)
       m4+brev_final(|fetch/instr, /brev_stage, 32, 32, 0, 1, $input_a, $sftamt, $grev_final_output)
+      ///brev_stage[(31) : 0]
+      //   $brev_stage_val1 = (|fetch/instr$sftamt[0] == 1'b0)  ? |fetch/instr$input_a[#brev_stage] : ((#brev_stage % (2 ** 1)) == 0 ) ? |fetch/instr$input_a[#brev_stage + (2 ** 0)] : |fetch/instr$input_a[#brev_stage - (2 ** 0)];
+      ///brev_stage[(31) : 0]
+      //   $brev_stage_val2 = (|fetch/instr$sftamt[1] == 1'b0)  ? |fetch/instr/brev_stage[#brev_stage]$brev_stage_val1 : (((#brev_stage % (2 ** 2)) >= 0) && ((#brev_stage % (2 ** 2)) < (2 ** 1) )) ? |fetch/instr/brev_stage[(#brev_stage + (2 ** 1) % (2 ** 1))]$brev_stage_val1 : |fetch/instr/brev_stage[((#brev_stage % (2 ** 1))) ]$brev_stage_val1;
+      ///brev_stage[(31) : 0]
+      //   $brev_stage_val3 = (|fetch/instr$sftamt[2] == 1'b0)  ? |fetch/instr/brev_stage[#brev_stage]$brev_stage_val2 : (((#brev_stage % (2 ** 3)) >= 0) && ((#brev_stage % (2 ** 3)) < (2 ** 2) )) ? |fetch/instr/brev_stage[(#brev_stage + (2 ** 2) % (2 ** 2))]$brev_stage_val2 : |fetch/instr/brev_stage[((#brev_stage % (2 ** 2))) ]$brev_stage_val2;
+      ///brev_stage[(31) : 0]
+      //   $brev_stage_val4 = (|fetch/instr$sftamt[3] == 1'b0)  ? |fetch/instr/brev_stage[#brev_stage]$brev_stage_val3 : (((#brev_stage % (2 ** 4)) >= 0) && ((#brev_stage % (2 ** 4)) < (2 ** 3) )) ? |fetch/instr/brev_stage[(#brev_stage + (2 ** 3) % (2 ** 3))]$brev_stage_val3 : |fetch/instr/brev_stage[((#brev_stage % (2 ** 3))) ]$brev_stage_val3;
+      ///brev_stage[(31) : 0]
+      //   $brev_stage_val5 = (|fetch/instr$sftamt[4] == 1'b0)  ? |fetch/instr/brev_stage[#brev_stage]$brev_stage_val4 : (((#brev_stage % (2 ** 5)) >= 0) && ((#brev_stage % (2 ** 5)) < (2 ** 4) )) ? |fetch/instr/brev_stage[(#brev_stage + (2 ** 4) % (2 ** 4))]$brev_stage_val4 : |fetch/instr/brev_stage[((#brev_stage % (2 ** 4))) ]$brev_stage_val4;
+      //$grev_final_output[(32 - 1) : 0] = /brev_stage[*]$brev_stage_val5;
       m4+bext_dep(1, |fetch/instr, 32, 1, 1, 0, $bmi_clk, $bmi_reset, $din_valid_bext_dep, $din_ready_bext_dep, $input_a, $input_b, $din_insn3, $din_insn13, $din_insn14, $din_insn29, $din_insn30, $dout_valid_bext_dep, $dout_ready_bext_dep, $bext_dep_output[31:0])
       m4+bfp($input_a, $input_b, $bfp_output, 32)
       m4+clmul(1, |fetch/instr, 32, $bmi_clk, $bmi_reset, $din_valid_clmul, $din_ready_clmul, $input_a, $input_b, $din_insn3, $din_insn12, $din_insn13, $dout_valid_clmul, $dout_ready_clmul, $clmul_output[31:0])
@@ -2107,7 +2118,7 @@ m4+definitions(['
          $input_b[31:0] = $is_src_type_instr ? /src[2]$reg_value : $raw_i_imm;
          $input_c[31:0] = /src[1]$reg_value; //This is needed for rvb_shifter_output
          
-         $sftamt[4:0] = $input_b[6:0];
+         $sftamt[6:0] = $input_b[6:0];
          $din_insn3   = |fetch/instr$raw[3];
          $din_insn12  = |fetch/instr$raw[12];
          $din_insn13  = |fetch/instr$raw[13];

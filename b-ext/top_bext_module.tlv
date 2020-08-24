@@ -170,14 +170,14 @@
    m4_ifelse_block(m4_eval(#_stage == 0 ), 1, ['
    /_brev_stage[''][(#_constbits - 1) : 0]
       $brev_stage_val['']#_stageinc = (/_top$sft_amt[#_stage] == 1'b0)  ? /_top$_data_value[#m4_brev_stage] :
-          ((#m4_brev_stage % (2 ** #_stageinc)) == 0 ) ? /_top$_data_value[#m4_brev_stage + (2 ** #_stage)] :
-          /_top$_data_value[(#m4_brev_stage + (2 ** (#_stageinc - #_stage))) % (2 ** #_stageinc) ];
+          ((#m4_brev_stage % (2 ** #_stageinc)) == 0 ) ? /_top$_data_value[(#m4_brev_stage + (2 ** #_stage)) % (2 ** #_stage)] :
+          /_top$_data_value[(#m4_brev_stage) % (2 ** #_stageinc) ];
    m4+brev_final(/_top,/_brev_stage,#_constbits,m4_eval(#_varbits / 2), m4_eval(#_stage + 1),m4_eval(#_stageinc + 1),$brev_stage_val['']#_stageinc,$sft_amt,$resultq)
    '],['
    /_brev_stage[''][(#_constbits - 1) : 0]
       $brev_stage_val['']#_stageinc = (/_top$sft_amt[#_stage] == 1'b0)  ? /_top/_brev_stage[['']#m4_brev_stage]$_data_value :
-          ( ((['']#m4_brev_stage % (2 ** #_stageinc)) >= 0) && ((['']#m4_brev_stage % (2 ** #_stageinc)) < (2 ** #_stage) )) ? /_top/_brev_stage[['']#m4_brev_stage + (2 ** #_stage)]$_data_value:
-          /_top/_brev_stage[(#m4_brev_stage + (2 ** (#_stageinc - #_stage)) % (2 ** #_stageinc) ]$_data_value;
+          ( ((['']#m4_brev_stage % (2 ** #_stageinc)) >= 0) && ((['']#m4_brev_stage % (2 ** #_stageinc)) < (2 ** #_stage) )) ? /_top/_brev_stage[(['']#m4_brev_stage + (2 ** #_stage)) % (2 ** #_stage)]$_data_value:
+          /_top/_brev_stage[(#m4_brev_stage % (2 ** #_stage) ]$_data_value;
    m4_ifelse_block(m4_eval(#_varbits >= 1), 1, ['
    m4+brev_final(/_top,/_brev_stage,#_constbits,m4_eval(#_varbits / 2), m4_eval(#_stage + 1),m4_eval(#_stageinc + 1),$brev_stage_val['']#_stageinc,$sft_amt,$resultq)
    '], ['
