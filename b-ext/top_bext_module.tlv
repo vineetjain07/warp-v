@@ -156,9 +156,10 @@
 // 27) ROTR (rotate right)
 // e.g. m4+rorr_final(32, 1, $input, $sftamt, $output, 31, 0)
 \TLV rorr_final(#_varbits,#_stage,$_reg_value,$_sft_amt,$_rotr,#_max,#_min) 
+   integer i;
    \always_comb
       $['']$_rotr['']#_stage[#_max : #_min] = 0;
-      for (int i = #_min; i <= #_max; i++)
+      for (i = #_min; i <= #_max; i++)
       begin
          $_rotr['']#_stage[i] = ($_sft_amt[#_stage - 1] == 0) ?
               $_reg_value[i] : (i <= (#_max) && i > (#_max - (2**(#_stage - 1)))) ?
