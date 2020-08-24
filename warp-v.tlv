@@ -1825,7 +1825,7 @@ m4+definitions(['
       m4+sro($input_a, $input_b, $sro_output, 32)
       m4+sloi($input_a, $input_b, $sloi_output, 32)
       m4+sroi($input_a, $input_b, $sroi_output, 32)
-      //m4+rorl_final(32, 1, $input_a, $sftamt, $rorl_final_output, 31, 0)
+      m4+rorl_final(32, 1, $input_a, $sftamt, $rorl_final_output, 31, 0)
       //m4+rorr_final(32, 1, $input_a, $sftamt, $rorr_final_output, 31, 0)
       m4+brev_final(|fetch/instr, /brev_stage, 32, 32, 0, 1, $input_a, $sftamt, $grev_final_output)
       m4+bext_dep(1, |fetch/instr, 32, 1, 1, 0, $bmi_clk, $bmi_reset, $din_valid_bext_dep, $din_ready_bext_dep, $input_a, $input_b, $din_insn3, $din_insn13, $din_insn14, $din_insn29, $din_insn30, $dout_valid_bext_dep, $dout_ready_bext_dep, $bext_dep_output[31:0])
@@ -2128,9 +2128,9 @@ m4+definitions(['
          $xnor_rslt[M4_WORD_RANGE]   = $xnor_output;
          $slo_rslt[M4_WORD_RANGE]    = $slo_output;
          $sro_rslt[M4_WORD_RANGE]    = $sro_output;
-         $rol_rslt[M4_WORD_RANGE]    = $rvb_shifter_output;
+         //$rol_rslt[M4_WORD_RANGE]    = $rvb_shifter_output;
          $ror_rslt[M4_WORD_RANGE]    = $rvb_shifter_output;
-         //$rol_rslt[M4_WORD_RANGE]    = $rorl_final_output;
+         $rol_rslt[M4_WORD_RANGE]    = $rorl_final_output;
          //$ror_rslt[M4_WORD_RANGE]    = $rorr_final_output;
          $sbclr_rslt[M4_WORD_RANGE]  = $sbclr_output;
          $sbset_rslt[M4_WORD_RANGE]  = $sbset_output;

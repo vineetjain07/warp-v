@@ -141,10 +141,10 @@
 // 26) ROTL (rotate left)
 // e.g. m4+rorl_final(32, 1, $input, $sftamt, $output, 31, 0)
 \TLV rorl_final(#_varbits,#_stage,$_reg_value,$_sft_amt,$_rotl,#_max,#_min) 
-   //integer i;
+   integer i;
    \always_comb
-      $['']$_rotl['']#_stage[#_max : #_min] = '0;
-      for (integer i = #_min; i <= #_max; i = i + 1) begin
+      $['']$_rotl['']#_stage[#_max : #_min] = 0;
+      for (i = #_min; i <= #_max; i = i + 1) begin
          $_rotl['']#_stage[i] = ($_sft_amt[#_stage - 1] == 0) ? $_reg_value[i] : (i >= 0 && i < (2**(#_stage - 1))) ?  $_reg_value[(i+((#_max + 1) - (2**(#_stage - 1))))] : $_reg_value[(i-(2**(#_stage - 1)))];
       end
    m4_ifelse_block(m4_eval(#_varbits > 2), 1, ['

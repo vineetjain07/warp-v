@@ -1,0 +1,7 @@
+\TLV redux($_redux_sig,/_hier,#_MAX,#_MIN,$_sig,$_init_expr ,_op)
+   integer i;
+   \always_comb
+      $['']$_redux_sig = $_init_expr ;
+      for (i = #_MIN; i <= #_MAX; i = i + 1) begin
+         $_redux_sig = $_redux_sig _op /_hier[i]$_sig;
+      end
