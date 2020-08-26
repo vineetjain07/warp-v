@@ -110,7 +110,7 @@ m4+definitions(['
    //
    // Long-latency non-pipelined instructions:
    //
-   //   o In the current implementation, floating point and integer multiplication / 
+   //   o In the current implementation, bit manipulation(few), floating point and integer multiplication / 
    //     division instructions are non-pipelined, followed by "no-fetch" cycles 
    //     until the next redirect (which will be a second issue of the instruction).
    //   o The data required during second can be passed to the commit stage using /orig_inst scope
@@ -423,6 +423,8 @@ m4+definitions(['
          m4_define_vector(['M4_WORD'], 32)  // 32 or RV32X or 64 for RV64X.
          // ISA extensions,  1, or 0 (following M4 boolean convention).
          // TODO. Currently formal checks are broken when M4_EXT_F is set to 1.
+         // TODO. Currently formal checks takes long time(~48 mins) when M4_EXT_B is set to 1.
+         //       Hence, its disabled at present.
          m4_defines(
             (['M4_EXT_E'], 1),
             (['M4_EXT_I'], 1),
@@ -433,7 +435,7 @@ m4+definitions(['
             (['M4_EXT_Q'], 0),
             (['M4_EXT_L'], 0),
             (['M4_EXT_C'], 0),
-            (['M4_EXT_B'], 1),
+            (['M4_EXT_B'], 0),
             (['M4_EXT_J'], 0),
             (['M4_EXT_T'], 0),
             (['M4_EXT_P'], 0),
@@ -954,7 +956,7 @@ m4+definitions(['
 '])
 \SV
    m4_ifexpr(M4_CORE_CNT > 1, ['m4_include_lib(['https://raw.githubusercontent.com/stevehoover/tlv_flow_lib/4bcf06b71272556ec7e72269152561902474848e/pipeflow_lib.tlv'])'])
-   m4_ifelse(M4_ISA, ['RISCV'], ['m4_include_lib(['https://raw.githubusercontent.com/stevehoover/warp-v_includes/7caf93b0c6eae25149817e9b410235c6c37f5428/risc-v_defs.tlv'])'])
+   m4_ifelse(M4_ISA, ['RISCV'], ['m4_include_lib(['https://raw.githubusercontent.com/stevehoover/warp-v_includes/8b5cfb9ffd9830aaf44297280682bedfe8bef3e3/risc-v_defs.tlv'])'])
 
 
 
