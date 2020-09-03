@@ -1599,7 +1599,7 @@ m4+definitions(['
       m4_ifelse_block(M4_EXT_F, 1, ['
       // Instruction requires floating point unit and is long-latency.
       // TODO. Current implementation decodes the floating type instructions seperatly.
-      // Hence can have a marco or signal to differentiate the type of instruction related to a particular extension or 
+      // Hence can have a macro or signal to differentiate the type of instruction related to a particular extension or 
       // could be better to use just $op5 decode for this.
       
       // These instructions modifies FP CSR's "frm" and generates "fflags".
@@ -1760,8 +1760,8 @@ m4+definitions(['
       m4_ifelse_block(M4_EXT_F, 1, ['
       // "F" Extension.
 
-      // TODO. Current implementation of FPU is not optimized in terms of encode-decode of instruction inside marco, hence its latency and generated logic increases.
-      // Need to call fpu_exe marco inside this ifelse_block itself and simplify it to optimize the unit.
+      // TODO. Current implementation of FPU is not optimized in terms of encode-decode of instruction inside macro, hence its latency and generated logic increases.
+      // Need to call fpu_exe macro inside this ifelse_block itself and simplify it to optimize the unit.
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */
       
@@ -1771,7 +1771,7 @@ m4+definitions(['
       // Main FPU execution
       m4+fpu_exe(/fpu1,|fetch/instr, 8, 24, 32, $operand_a, $operand_b, $operand_c, $int_input, $int_output, $fpu_operation, $rounding_mode, $nreset, $clock, $input_valid, $outvalid, $lt_compare, $eq_compare, $gt_compare, $unordered, $output_result, $output_div_sqrt11, $output_class, $exception_invaild_output, $exception_infinite_output, $exception_overflow_output, $exception_underflow_output, $exception_inexact_output)
       
-      // Sign-injection marcos
+      // Sign-injection macros
       m4+sgn_mv_injn(8, 24, $operand_a, $operand_b, $fsgnjs_output)
       m4+sgn_neg_injn(8, 24, $operand_a, $operand_b, $fsgnjns_output)
       m4+sgn_abs_injn(8, 24, $operand_a, $operand_b, $fsgnjxs_output)
@@ -1782,9 +1782,9 @@ m4+definitions(['
       
       m4_ifelse_block(M4_EXT_B, 1, ['
       // "B" Extension.
-      // TODO. Current implementation of BMI is not optimized in terms of encode-decode of instruction inside marco, hence its latency and generated logic increases.
+      // TODO. Current implementation of BMI is not optimized in terms of encode-decode of instruction inside macro, hence its latency and generated logic increases.
 
-      // Main BMI Marco's
+      // Main BMI Macro's
 
       $din_valid_bext_dep = ($is_gorc_instr || $is_gorci_instr || $is_shfl_instr || $is_unshfl_instr || $is_bdep_instr || $is_bext_instr || $is_shfli_instr || $is_unshfli_instr) && |fetch/instr$commit;
       $din_valid_clmul = ($is_clmul_instr || $is_clmulr_instr || $is_clmulh_instr) && |fetch/instr$commit;
@@ -1823,11 +1823,11 @@ m4+definitions(['
       m4+rorl_final(32, 1, $input_a, $sftamt, $rorl_final_output, 31, 0)
       m4+rorr_final(32, 1, $input_a, $sftamt, $rorr_final_output, 31, 0)
       m4+brev_final(|fetch/instr, /brev_stage, 32, 32, 0, 1, $input_a, $sftamt, $grev_final_output)
-      m4+bext_dep(1, |fetch/instr, 32, 1, 1, 0, $bmi_clk, $bmi_reset, $din_valid_bext_dep, $din_ready_bext_dep, $input_a, $input_b, $din_insn3, $din_insn13, $din_insn14, $din_insn29, $din_insn30, $dout_valid_bext_dep, $dout_ready_bext_dep, $bext_dep_output[31:0])
+      m4+bext_dep(1, |fetch/instr, 32, 1, 1, 0, $bmi_clk, $bmi_reset, $din_valid_bext_dep, $din_ready_bext_dep, $input_a, $input_b, $raw[3], $raw[13], $raw[14], $raw[29], $raw[30], $dout_valid_bext_dep, $dout_ready_bext_dep, $bext_dep_output[31:0])
       m4+bfp($input_a, $input_b, $bfp_output, 32)
-      m4+clmul(1, |fetch/instr, 32, $bmi_clk, $bmi_reset, $din_valid_clmul, $din_ready_clmul, $input_a, $input_b, $din_insn3, $din_insn12, $din_insn13, $dout_valid_clmul, $dout_ready_clmul, $clmul_output[31:0])
-      m4+rvb_crc(1, |fetch/instr, 32, $bmi_clk, $bmi_reset, $din_valid_rvb_crc, $din_ready_rvb_crc, $input_a, $din_insn20, $din_insn21, $din_insn23, $dout_valid_rvb_crc, $dout_ready_rvb_crc, $rvb_crc_output[31:0])
-      m4+rvb_bitcnt(1, |fetch/instr, 32, 0, $bmi_clk, $bmi_reset, $din_valid_rvb_bitcnt, $din_ready_rvb_bitcnt, $input_a, $din_insn3, $din_insn20, $din_insn21, $din_insn22, $dout_valid_rvb_bitcnt, $dout_ready_rvb_bitcnt, $rvb_bitcnt_output[31:0])
+      m4+clmul(1, |fetch/instr, 32, $bmi_clk, $bmi_reset, $din_valid_clmul, $din_ready_clmul, $input_a, $input_b, $raw[3], $raw[12], $raw[13], $dout_valid_clmul, $dout_ready_clmul, $clmul_output[31:0])
+      m4+rvb_crc(1, |fetch/instr, 32, $bmi_clk, $bmi_reset, $din_valid_rvb_crc, $din_ready_rvb_crc, $input_a, $raw[20], $raw[21], $raw[23], $dout_valid_rvb_crc, $dout_ready_rvb_crc, $rvb_crc_output[31:0])
+      m4+rvb_bitcnt(1, |fetch/instr, 32, 0, $bmi_clk, $bmi_reset, $din_valid_rvb_bitcnt, $din_ready_rvb_bitcnt, $input_a, $raw[3], $raw[20], $raw[21], $raw[22], $dout_valid_rvb_bitcnt, $dout_ready_rvb_bitcnt, $rvb_bitcnt_output[31:0])
       /* verilator lint_on WIDTH */
       /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on PINMISSING */
@@ -1954,7 +1954,7 @@ m4+definitions(['
          // "F" Extension.
          
          m4_ifelse_block(M4_EXT_F, 1, ['
-         // Determining the type of fpu_operation according to the fpu_exe marco
+         // Determining the type of fpu_operation according to the fpu_exe macro
          $fpu_operation[4:0] = ({5{$is_fmadds_instr }}  & 5'h2 ) |
                                ({5{$is_fmsubs_instr }}  & 5'h3 ) |
                                ({5{$is_fnmsubs_instr}}  & 5'h4 ) |
@@ -2086,20 +2086,7 @@ m4+definitions(['
          $input_a[31:0] = /src[1]$reg_value;
          $input_b[31:0] = $is_src_type_instr ? /src[2]$reg_value : $raw_i_imm;
          $sftamt[4:0] = $input_b[4:0];
-
-         $din_insn3   = |fetch/instr$raw[3];
-         $din_insn12  = |fetch/instr$raw[12];
-         $din_insn13  = |fetch/instr$raw[13];
-         $din_insn14  = |fetch/instr$raw[14];
-         $din_insn20  = |fetch/instr$raw[20];
-         $din_insn21  = |fetch/instr$raw[21];
-         $din_insn22  = |fetch/instr$raw[22];
-         $din_insn23  = |fetch/instr$raw[23];
-         $din_insn26  = |fetch/instr$raw[26];
-         $din_insn27  = |fetch/instr$raw[27];
-         $din_insn29  = |fetch/instr$raw[29];
-         $din_insn30  = |fetch/instr$raw[30];
-         `BOGUS_USE($is_imm_type_instr $sftamt $din_insn22 $din_insn26 $din_insn27)
+         `BOGUS_USE($is_imm_type_instr $sftamt)
 
          // Results
          $andn_rslt[M4_WORD_RANGE]   = $andn_output;
@@ -2945,6 +2932,7 @@ m4+definitions(['
       /* verilator lint_off WIDTH */
       /* verilator lint_off CASEINCOMPLETE */   
       m4_include_url(['https:/']['/raw.githubusercontent.com/stevehoover/warp-v_includes/master/fpu/topmodule.tlv'])
+      /* verilator lint_on CASEINCOMPLETE */
       /* verilator lint_on WIDTH */
    '])
 
@@ -3082,7 +3070,6 @@ m4+definitions(['
    m4_ifelse_block(M4_EXT_B, 1, ['
       m4_ifelse(M4_ISA, ['RISCV'], [''], ['m4_errprint(['B-ext supported for RISC-V only.']m4_new_line)'])
       /* verilator lint_off WIDTH */
-      /* verilator lint_off CASEINCOMPLETE */ 
       /* verilator lint_off PINMISSING */
       /* verilator lint_off CASEOVERLAP */
       m4_include_url(['https:/']['/raw.githubusercontent.com/stevehoover/warp-v_includes/master/b-ext/top_bext_module.tlv'])
@@ -3091,6 +3078,13 @@ m4+definitions(['
       /* verilator lint_on PINMISSING */   
    '])      
 \TLV b_extension()
+
+   // Few of RISC-V B-Extension instructions (CRC and CMUL) in WARP-V are of fixed latency.
+   // At present we refered to the same way latency in M-extension is handled.
+   // Verilog modules for those inst. are inherited from Clifford Wolf's draft implementation, located inside warp-v_includes in ./b-ext directory.
+   // Although the latency of different variant of CRC instr's are different, we are using a common FIXED LATENCY
+   // for those instr's.
+
    m4_define(['M4_CLMUL_LATENCY'], 5)
    m4_define(['M4_CRC_LATENCY'], 5)
    @M4_NEXT_PC_STAGE
