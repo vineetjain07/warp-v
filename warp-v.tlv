@@ -52,6 +52,9 @@ m4+definitions(['
    //     the potential. While we openly welcome collaboration, there are no current expectations that folks
    //     will be able to evolve the design independently. If you are interested in collaboration,
    //     please contact steve.hoover@redwoodeda.com.
+   //   o If you've come here to learn about RISC-V design with TL-Verilog, you might be better served
+   //     to start with these models created in the Microprocessor for You in Thirty Hours (MYTH) Workshop:
+   //     https://github.com/stevehoover/RISC-V_MYTH_Workshop/blob/master/student_projects.md.
    //   o The preprocessed code is represented in the "Nav-TLV" tab. You can debug using
    //     Nav-TLV and find corresponding source lines by clicking Nav-TLV line numbers.
    //   o The "Diagram" may fail to generate due to the size of the design.
@@ -289,10 +292,11 @@ m4+definitions(['
       m4_define_hier(['M4_VC'], 2)    // VCs (meaningful if > 1 core).
       m4_define_hier(['M4_PRIO'], 2)  // Number of priority levels in the NoC.
       m4_define(['M4_MAX_PACKET_SIZE'], 3)   // Max number of payload flits in a packet.
-      m4_define_vector_with_fields(M4_FLIT, 32, UNUSED, m4_eval(M4_CORE_INDEX_CNT * 2 + M4_VC_INDEX_CNT) , SRC, m4_eval(M4_CORE_INDEX_CNT + M4_VC_INDEX_CNT), VC, M4_CORE_INDEX_CNT, DEST, 0)   '])
+   '])
    // Inclusions for multi-core only:
    m4_ifexpr(M4_CORE_CNT > 1, ['
       m4_ifelse(M4_ISA, ['RISCV'], [''], ['m4_errprint(['Multi-core supported for RISC-V only.']m4_new_line)'])
+      m4_define_vector_with_fields(M4_FLIT, 32, UNUSED, m4_eval(M4_CORE_INDEX_CNT * 2 + M4_VC_INDEX_CNT), VC, m4_eval(M4_CORE_INDEX_CNT * 2), SRC, M4_CORE_INDEX_CNT, DEST, 0)
       m4_include_url(['https:/']['/raw.githubusercontent.com/stevehoover/tlv_lib/481188115b4338567df916460d462ca82401e211/fundamentals_lib.tlv'])
       m4_include_url(['https:/']['/raw.githubusercontent.com/stevehoover/tlv_flow_lib/7a2b37cc0ccd06bc66984c37e17ceb970fd6f339/pipeflow_lib.tlv'])
    '])
@@ -364,6 +368,22 @@ m4+definitions(['
             (M4_MEM_WR_STAGE, 0),
             (M4_LD_RETURN_ALIGN, 1))
          m4_default(['M4_BRANCH_PRED'], ['fallthrough'])
+         m4_define_hier(['M4_DATA_MEM_WORDS'], 32)
+      '],
+      ['2-stage'], ['
+         // 2-stage pipeline.
+         m4_defines(
+            (M4_NEXT_PC_STAGE, 0),
+            (M4_FETCH_STAGE, 0),
+            (M4_DECODE_STAGE, 0),
+            (M4_BRANCH_PRED_STAGE, 0),
+            (M4_REG_RD_STAGE, 0),
+            (M4_EXECUTE_STAGE, 1),
+            (M4_RESULT_STAGE, 1),
+            (M4_REG_WR_STAGE, 1),
+            (M4_MEM_WR_STAGE, 1),
+            (M4_LD_RETURN_ALIGN, 2))
+         m4_define(['M4_BRANCH_PRED'], ['two_bit'])
          m4_define_hier(['M4_DATA_MEM_WORDS'], 32)
       '],
       ['4-stage'], ['
@@ -840,6 +860,7 @@ m4+definitions(['
          m4_define_csr(['pktavail'],   12'h809,    ['M4_VC_HIGH, AVAIL_MASK, 0'],      ['M4_VC_HIGH'b0'],             ['{M4_VC_HIGH{1'b1}}'],              1)
          m4_define_csr(['pktcomp'],    12'h80a,    ['M4_VC_HIGH, AVAIL_MASK, 0'],      ['M4_VC_HIGH'b0'],             ['{M4_VC_HIGH{1'b1}}'],              1)
          m4_define_csr(['pktrd'],      12'h80b,    ['M4_WORD_HIGH, DATA, 0'],          ['M4_WORD_HIGH'b0'],           ['{M4_WORD_HIGH{1'b0}}'],            RO)
+         m4_define_csr(['core'],       12'h80d,    ['M4_CORE_INDEX_HIGH, CORE, 0'],    ['M4_CORE_INDEX_HIGH'b0'],     ['{M4_CORE_INDEX_HIGH{1'b1}}'],      RO)
          m4_define_csr(['pktinfo'],    12'h80c,    ['m4_eval(M4_CORE_INDEX_HIGH + 3), SRC, 3, MID, 2, AVAIL, 1, COMP, 0'],
                                                                             ['m4_eval(M4_CORE_INDEX_HIGH + 3)'b100'], ['m4_eval(M4_CORE_INDEX_HIGH + 3)'b0'], 1)
          // TODO: Unimplemented: pkthead, pktfree, pktmax, pktmin.
@@ -1009,7 +1030,9 @@ m4+definitions(['
       }; 
 
 \TLV mini_imem(_prog_name)
-   m4+indirect(['mini_']_prog_name['_prog'])
+   // Instantiate the program. (This approach is required for an m4-defined name.)
+   m4_define(['m4_prog'], ['mini_']_prog_name['_prog'])
+   m4+m4_prog()
    m4+instrs_for_viz()
    |fetch
       /instr
@@ -1344,7 +1367,9 @@ m4+definitions(['
    m4_asm(ORI, r0, r0, 0)
    
 \TLV riscv_imem(_prog_name)
-   m4+indirect(['riscv_']_prog_name['_prog'])
+   // Instantiate the program. (This approach is required for an m4-defined name.)
+   m4_define(['m4_prog'], ['riscv_']_prog_name['_prog'])
+   m4+m4_prog()
    m4+instrs_for_viz()
    
    // ==============
@@ -2149,7 +2174,7 @@ m4+definitions(['
 
    // CSR logic
    // ---------
-   m4+riscv_csrs((m4_csrs))
+   m4+riscv_csrs([''](m4_csrs)[''])
    @_exe_stage
       m4+riscv_csr_logic()
       
@@ -2258,7 +2283,9 @@ m4+definitions(['
       };
 
 \TLV mipsi_imem(_prog_name)
-   m4+indirect(['mipsi_']_prog_name['_prog'])
+   // Instantiate the program. (This approach is required for an m4-defined name.)
+   m4_define(['m4_prog'], ['mipsi_']_prog_name['_prog'])
+   m4+m4_prog()
    |fetch
       /instr
          @M4_FETCH_STAGE
@@ -2572,7 +2599,9 @@ m4+definitions(['
       };
 
 \TLV power_imem(_prog_name)
-   m4+indirect(['mipsi_']_prog_name['_prog'])
+   // Instantiate the program. (This approach is required for an m4-defined name.)
+   m4_define(['m4_prog'], ['power_']_prog_name['_prog'])
+   m4+m4_prog()
    m4+instrs_for_viz()
    |fetch
       /instr
@@ -3111,10 +3140,12 @@ m4+definitions(['
 
 \TLV cpu(/_cpu)
    // Generated logic
-   m4+indirect(M4_isa['_gen'])
+   // Instantiate the _gen macro for the right ISA. (This approach is required for an m4-defined name.)
+   m4_define(['m4_gen'], M4_isa['_gen'])
+   m4+m4_gen()
 
    // Instruction memory and fetch of $raw.
-   m4+indirect(M4_IMEM_MACRO_NAME, M4_PROG_NAME)
+   m4+M4_IMEM_MACRO_NAME(M4_PROG_NAME)
 
 
    // /=========\
@@ -3308,8 +3339,12 @@ m4+definitions(['
             $valid_decode_branch = $valid_decode && $branch;
             // A load that will return later.
             //$split_ld = $spec_ld && 1'b['']M4_INJECT_RETURNING_LD;
-            m4+indirect(M4_isa['_decode'])
-         m4+indirect(['branch_pred_']M4_BRANCH_PRED)
+            // Instantiate the program. (This approach is required for an m4-defined name.)
+            m4_define(['m4_decode_macro_name'], M4_isa['_decode'])
+            m4+m4_decode_macro_name()
+         // Instantiate the program. (This approach is required for an m4-defined name.)
+         m4_define(['m4_branch_pred_macro_name'], ['branch_pred_']M4_BRANCH_PRED)
+         m4+m4_branch_pred_macro_name()
          
          @M4_REG_RD_STAGE
             // Pending value to write to dest reg. Loads (not replaced by returning ld) write pending.
@@ -3394,7 +3429,10 @@ m4+definitions(['
          // =======
          // Execute
          // =======
-         m4+indirect(M4_isa['_exe'], @M4_EXECUTE_STAGE, @M4_RESULT_STAGE)
+         
+         // Instantiate the program. (This approach is required for an m4-defined name.)
+         m4_define(['m4_exe_macro_name'], M4_isa['_exe'])
+         m4+m4_exe_macro_name(@M4_EXECUTE_STAGE, @M4_RESULT_STAGE)
          
          @M4_BRANCH_PRED_STAGE
             m4_ifelse(M4_BRANCH_PRED, ['fallthrough'], [''], ['$pred_taken_branch = $pred_taken && $branch;'])
@@ -3435,7 +3473,7 @@ m4+definitions(['
             // $commit = m4_prev_instr_valid_through(M4_MAX_REDIRECT_BUBBLES + 1), where +1 accounts for this
             // instruction's redirects. However, to meet timing, we consider this instruction separately, so,
             // commit if valid as of the latest redirect from prior instructions and not abort of this instruction.
-            m4_ifelse(M4_RETIMING_EXPERIMENT_ALWAYS_COMMIT, ['M4_RETIMING_EXPERIMENT_ALWAYS_COMMIT'], ['
+            m4_ifelse_block(M4_RETIMING_EXPERIMENT_ALWAYS_COMMIT, ['M4_RETIMING_EXPERIMENT_ALWAYS_COMMIT'], ['
             // Normal case:
             $commit = m4_prev_instr_valid_through(M4_MAX_REDIRECT_BUBBLES) && ! $abort;
             '], ['
@@ -3962,7 +4000,9 @@ m4+module_def
    '])
 
 \TLV cpu_viz()
-   m4+indirect(M4_isa['_viz_logic'])
+   // Instantiate the program. (This approach is required for an m4-defined name.)
+   m4_define(['m4_viz_logic_macro_name'], M4_isa['_viz_logic'])
+   m4+m4_viz_logic_macro_name()
    |fetch
       @M4_REG_WR_STAGE  // Visualize everything happening at the same time.
          /instr_mem[m4_eval(M4_NUM_INSTRS-1):0]  // TODO: Cleanly report non-integer ranges.
