@@ -1857,14 +1857,8 @@ m4+definitions(['
             /* verilator lint_off CASEINCOMPLETE */   
             m4+warpv_mul(|fetch/instr,/mul1, $mulblock_rslt, $wrm, $waitm, $readym, $clk, $resetn, $mul_in1, $mul_in2, $instr_type_mul, $mulblk_valid)
             m4+warpv_div(|fetch/instr,/div1, $divblock_rslt, $wrd, $waitd, $readyd, $clk, $resetn, $div_in1, $div_in2, $instr_type_div, >>1$div_stall)
-            // for the division module, the valid signal must be asserted for the entire computation duration, hence >>1$div_stall is used for this purpose
-            // for multiplication it is just a single cycle pulse to start operating
             /* verilator lint_on CASEINCOMPLETE */
             /* verilator lint_on WIDTH */
-            // use $ANY for passing attributes from long-latency div/mul instructions into the pipeline 
-            // stall_cnt_upper_div indicates that the results for div module are ready. The second issue of the instruction takes place
-            // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
-            // retain till next M-type instruction, to be used again at second issue
          )
       m4+ifelse(M4_EXT_F, 1,
          \TLV
