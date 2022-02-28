@@ -3015,10 +3015,8 @@ m4+definitions(['
    
 \TLV warpv_div(/_top, /_name, $_rslt, $_wr, $_wait, $_ready, $_clk, $_reset, $_op_a, $_op_b, $_instr_type, $_muldiv_valid)
    /_name
-      
       // instr type is one hot encoding of the required M type instruction
       // the idea is to concatenate is_*_instr from WARP-V and pass on to this module
-         
       $opcode[2:0] = (/_top$_instr_type == 4'b0001 ) ? 3'b100 : // div
                      (/_top$_instr_type == 4'b0010 ) ? 3'b101 : // divu
                      (/_top$_instr_type == 4'b0100 ) ? 3'b110 : // rem
