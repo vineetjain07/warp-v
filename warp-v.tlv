@@ -1866,7 +1866,6 @@ m4+definitions(['
             // M4_NON_PIPELINED_BUBBLES after this point (depending on pipeline depth)
             // retain till next M-type instruction, to be used again at second issue
          )
- 
       m4+ifelse(M4_EXT_F, 1,
          \TLV
             // "F" Extension.
@@ -1889,8 +1888,6 @@ m4+definitions(['
             /* verilator lint_on WIDTH */
             /* verilator lint_on CASEINCOMPLETE */
          )
-      
-      
       m4+ifelse(M4_EXT_B, 1,
          \TLV
             // "B" Extension.
@@ -1949,7 +1946,6 @@ m4+definitions(['
 
             `BOGUS_USE($din_ready_rvb_bitcnt $din_ready_bext_dep $din_ready_rvb_crc $din_ready_clmul)
          )
-
       // hold_inst scope is not needed when long latency instructions are disabled
       m4_ifelse(m4_eval(M4_EXT_M || M4_EXT_F || M4_EXT_B), 1, ['
       // ORed with 1'b0 for maintaining correct behavior for all 3 combinations of F & M, only F and only M 
