@@ -2987,7 +2987,6 @@ m4+definitions(['
 
 \TLV warpv_mul(/_top, /_name, $_rslt, $_wr, $_wait, $_ready, $_clk, $_reset, $_op_a, $_op_b, $_instr_type, $_muldiv_valid)
    /_name      
-      
       // instr type is one hot encoding of the required M type instruction
       // the idea is to concatenate is_*_instr from WARP-V and pass on to this module
          
