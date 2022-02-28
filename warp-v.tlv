@@ -1855,11 +1855,10 @@ m4+definitions(['
             $mulblk_valid = $multype_instr && $commit;
             /* verilator lint_off WIDTH */
             /* verilator lint_off CASEINCOMPLETE */   
-            //m4+warpv_mul(|fetch/instr,/mul1, $mulblock_rslt, $wrm, $waitm, $readym, $clk, $resetn, $mul_in1, $mul_in2, $instr_type_mul, $mulblk_valid)
-            //m4+warpv_div(|fetch/instr,/div1, $divblock_rslt, $wrd, $waitd, $readyd, $clk, $resetn, $div_in1, $div_in2, $instr_type_div, >>1$div_stall)
+            m4+warpv_mul(|fetch/instr,/mul1, $mulblock_rslt, $wrm, $waitm, $readym, $clk, $resetn, $mul_in1, $mul_in2, $instr_type_mul, $mulblk_valid)
+            m4+warpv_div(|fetch/instr,/div1, $divblock_rslt, $wrd, $waitd, $readyd, $clk, $resetn, $div_in1, $div_in2, $instr_type_div, >>1$div_stall)
             // for the division module, the valid signal must be asserted for the entire computation duration, hence >>1$div_stall is used for this purpose
             // for multiplication it is just a single cycle pulse to start operating
-
             /* verilator lint_on CASEINCOMPLETE */
             /* verilator lint_on WIDTH */
             // use $ANY for passing attributes from long-latency div/mul instructions into the pipeline 
